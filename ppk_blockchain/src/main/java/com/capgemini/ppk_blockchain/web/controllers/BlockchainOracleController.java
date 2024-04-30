@@ -55,6 +55,10 @@ public class BlockchainOracleController {
         return false;
     }
 
+    /**
+     *
+     * @return
+     */
     @GetMapping("api/v1/protected/all")
     public ResponseEntity<List<DriverAsset>> getAllDriverAssets() {
         return null;
