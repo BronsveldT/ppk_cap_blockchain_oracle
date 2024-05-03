@@ -1,10 +1,16 @@
 package com.capgemini.ppk_blockchain.web.db.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class ReverseRoads {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -15,13 +21,21 @@ public class ReverseRoads {
     @Column(name = "longitude")
     private double lon;
     @Column(name = "road_category")
-    private int roadCategory;
+    private Integer roadCategory;
     @Column(name = "street_name")
     private String streetName;
     @Column(name = "road_admin_type")
     private String roadAdminType;
+    @Column(name = "admin_number")
+    private Integer adminNumber;
+    @Column(name = "admin_name")
+    private String adminName;
+    @Column(name = "road_admin_name")
+    private String roadAdminName;
 
-    public ReverseRoads(Integer id, double lat, double lon, int roadCategory, String streetName, String roadAdminType) {
+    public ReverseRoads(Integer id, double lat, double lon,
+                        int roadCategory,
+                        String streetName, String roadAdminType) {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
@@ -30,71 +44,15 @@ public class ReverseRoads {
         this.roadAdminType = roadAdminType;
     }
 
-    public ReverseRoads(double lat, double lon, int roadCategory, String streetName, String roadAdminType) {
+    public ReverseRoads(double lat, double lon, Integer roadCategory, String streetName, String roadAdminType
+    , Integer adminNumber, String adminName, String roadAdminName) {
         this.lat = lat;
         this.lon = lon;
         this.roadCategory = roadCategory;
         this.streetName = streetName;
         this.roadAdminType = roadAdminType;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public double getLat() {
-        return lat;
-    }
-
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
-
-    public double getLon() {
-        return lon;
-    }
-
-    public void setLon(double lon) {
-        this.lon = lon;
-    }
-
-    public int getRoadCategory() {
-        return roadCategory;
-    }
-
-    public void setRoadCategory(int roadCategory) {
-        this.roadCategory = roadCategory;
-    }
-
-    public String getStreetName() {
-        return streetName;
-    }
-
-    public void setStreetName(String streetName) {
-        this.streetName = streetName;
-    }
-
-    public String getRoadAdminType() {
-        return roadAdminType;
-    }
-
-    public void setRoadAdminType(String roadAdminType) {
-        this.roadAdminType = roadAdminType;
-    }
-
-    @Override
-    public String toString() {
-        return "ReverseRoads{" +
-                "id=" + id +
-                ", lat=" + lat +
-                ", lon=" + lon +
-                ", roadCategory='" + roadCategory + '\'' +
-                ", streetName='" + streetName + '\'' +
-                ", roadAdminType='" + roadAdminType + '\'' +
-                '}';
+        this.adminNumber = adminNumber;
+        this.adminName = adminName;
+        this.roadAdminName = roadAdminName;
     }
 }

@@ -80,13 +80,11 @@ public class DriverAsset {
      *
      * @param roadCategory
      * @param streetName
-     * @param adminNumber
      * @param distanceTravelled
      * @param spits
      */
     public void addTravelledInformation(Integer roadCategory,
                                         String streetName,
-                                        Integer adminNumber,
                                         double distanceTravelled,
                                         Integer spits){
         //1. Add the driven meters to the roadcategories array.

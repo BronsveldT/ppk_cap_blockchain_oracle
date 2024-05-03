@@ -75,7 +75,7 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
      */
     /**
      * Processes a single ride of the user. Makes use of the openstreetmap reverse geocoding in the function
-     * {@link #reverseGeoCodingOpenStreetMap()}.
+     * {@link #()}.
      * See openstreetmap documentation: https://nominatim.org/release-docs/latest/api/Reverse/
      *
      * @param carInfo
@@ -92,8 +92,16 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
             ReverseRoads reverseRoads = reverseRoadRepository.findByLatAndLon(roadinformation.getLatitude(), roadinformation.getLongitude());
             if(reverseRoads != null) { //In case we already got the lat and lon combination in the local db stored, there is no need to
                                         //make a request to nominatim.
-                this.blockchainService.addTravelInformationToDriverAsset(reverseRoads.getRoadCategory(),reverseRoads.getStreetName(),
-                        999, roadinformation);
+                this.blockchainService.addTravelInformationToDriverAsset(reverseRoads.getRoadCategory(),reverseRoads.getStreetName(), roadinformation);
+                System.out.println(reverseRoads);
+                this.blockchainService.addRoadData(
+                        reverseRoads.getRoadAdminType(),
+                        reverseRoads.getStreetName(),
+                        reverseRoads.getAdminNumber(),
+                        reverseRoads.getAdminName(),
+                        reverseRoads.getRoadAdminName(),
+                        roadinformation.getDistanceToPrev()
+                );
             } else {
                 OpenstreetMap openstreetMap = reverseGeoCodingOpenStreetMap(roadinformation.getLatitude(), roadinformation.getLongitude());
                 Address address;
@@ -101,14 +109,44 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
                     address = openstreetMap.getAddress();
                     if(roadsNotInDataset.containsKey(address.getRoad())) {
                         this.blockchainService.addTravelInformationToDriverAsset(roadsNotInDataset.get(address.getRoad()), address.getRoad(),
-                                9000, roadinformation);
+                                roadinformation);
+                        System.out.println("Skipped road");
+                        System.out.println(address);
+                        this.blockchainService.addRoadData(
+                                roadsNotInDataset.get(address.getRoad()), //For example 2 gets passed here.
+                                address.getRoad(),
+                                address.getMunicipality(), //For example Zaanstad
+                                address.getState(), //For example Noord-Holland
+                                roadinformation.getDistanceToPrev()
+                        );
+//                        this.blockchainService.addRoadData(
+//
+//                        ); This doesn't work because we got no information about the road in some cases, like for
+                            //example the Doctor J.M Den Uylbrug
                     } else {
                         Wegen wegen = wegenRepository.findWegenByStreetName(address.getRoad(), address.getTown());
                         if(wegen != null) {
+                            System.out.println("Komen we hierzo");
                             System.out.println(wegen);
-                            this.blockchainService.addTravelInformationToDriverAsset(wegen.getRoadCategory(), wegen.getStreetName(), wegen.getAdminNumber(), roadinformation);
-                            reverseRoads = new ReverseRoads(roadinformation.getLatitude(), roadinformation.getLongitude(),
-                                    wegen.getRoadCategory(), wegen.getStreetName(), wegen.getRoadAdminType());
+                            this.blockchainService.addTravelInformationToDriverAsset(wegen.getRoadCategory(), wegen.getStreetName(), roadinformation);
+                            reverseRoads = new ReverseRoads(
+                                    roadinformation.getLatitude(),
+                                    roadinformation.getLongitude(),
+                                    wegen.getRoadCategory(),
+                                    wegen.getStreetName(),
+                                    wegen.getRoadAdminType(),
+                                    wegen.getAdminNumber(),
+                                    wegen.getAdminName(),
+                                    wegen.getAdminName()
+                            );
+                            this.blockchainService.addRoadData(
+                                    reverseRoads.getRoadAdminType(),
+                                    reverseRoads.getStreetName(),
+                                    reverseRoads.getAdminNumber(),
+                                    reverseRoads.getAdminName(),
+                                    reverseRoads.getRoadAdminName(),
+                                    roadinformation.getDistanceToPrev()
+                            );
                             reverseRoadRepository.save(reverseRoads);
                         } else {
                             System.out.println("Skipped this road");
