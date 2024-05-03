@@ -1,7 +1,7 @@
 package com.capgemini.ppk_blockchain.web.controllers;
 
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
-import com.capgemini.ppk_blockchain.web.models.CarInfo;
+import com.capgemini.ppk_blockchain.web.restmodels.CarInfo;
 import com.capgemini.ppk_blockchain.web.services.DriverInfoProcessServiceImpl;
 import com.capgemini.ppk_blockchain.web.services.DriverInfoRetrievalServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;

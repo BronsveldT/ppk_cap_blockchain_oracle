@@ -1,4 +1,4 @@
-package com.capgemini.ppk_blockchain.web.models;
+package com.capgemini.ppk_blockchain.web.restmodels;
 
 public class OpenstreetMapRequest {
     private double lat;

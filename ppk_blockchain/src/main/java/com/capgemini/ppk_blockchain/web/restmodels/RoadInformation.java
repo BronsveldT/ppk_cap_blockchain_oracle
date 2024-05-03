@@ -1,4 +1,4 @@
-package com.capgemini.ppk_blockchain.web.models;
+package com.capgemini.ppk_blockchain.web.restmodels;
 
 /**
  * This model is used to process a single ride from the user. It is not to be used when returning information of the

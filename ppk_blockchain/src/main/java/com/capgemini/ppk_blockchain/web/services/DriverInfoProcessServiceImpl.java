@@ -1,38 +1,78 @@
 package com.capgemini.ppk_blockchain.web.services;
 
+import com.capgemini.ppk_blockchain.blockchain.interfaceimpl.BlockchainServiceImpl;
+import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
+import com.capgemini.ppk_blockchain.web.db.models.ReverseRoads;
+import com.capgemini.ppk_blockchain.web.db.models.Wegen;
 import com.capgemini.ppk_blockchain.web.interfaces.DriverInfoProcessService;
-import com.capgemini.ppk_blockchain.web.models.CarInfo;
-import com.capgemini.ppk_blockchain.web.models.OpenstreetMap;
-import com.capgemini.ppk_blockchain.web.models.OpenstreetMapRequest;
-import com.capgemini.ppk_blockchain.web.models.RoadInformation;
+import com.capgemini.ppk_blockchain.web.repositories.ReverseRoadRepository;
+import com.capgemini.ppk_blockchain.web.repositories.WegenRepository;
+import com.capgemini.ppk_blockchain.web.restmodels.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriBuilder;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
 
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(3);
 
-    private final WebClient.Builder openStreetMapClient;
+    final
+    WegenRepository wegenRepository;
+    final
+    ReverseRoadRepository reverseRoadRepository;
+    final
+    BlockchainServiceImpl blockchainService;
 
-    public DriverInfoProcessServiceImpl(WebClient.Builder openStreetMapClient) {
-        this.openStreetMapClient = openStreetMapClient;
+    HashMap<String, Integer> roadsNotInDataset;
+    public DriverInfoProcessServiceImpl(WegenRepository wegenRepository, ReverseRoadRepository reverseRoadRepository, BlockchainServiceImpl blockchainService) {
+        this.wegenRepository = wegenRepository;
+        this.reverseRoadRepository = reverseRoadRepository;
+        roadsNotInDataset = new HashMap<>();
+        roadsNotInDataset.put("Doctor J.M. den Uylweg", 2);
+        roadsNotInDataset.put("Thorbeckeweg", 2);
+        roadsNotInDataset.put("Kolkweg", 2);
+        roadsNotInDataset.put("Oostzanerdijk", 3);
+        roadsNotInDataset.put("Coentunnelweg", 1);
+        roadsNotInDataset.put("Ringweg-Noord", 1);
+        roadsNotInDataset.put("Westrandweg", 1); //lat='52.398605073551764', lon='4.846242937148632' lat='52.38723356252401', lon='4.768465784090613
+        // lat='52.39316003788911', lon='4.778848147911693
+        roadsNotInDataset.put("Ringweg-West", 1); //52.40618094325841', lon='4.854952033354235
+        roadsNotInDataset.put("Rijksweg A5", 1); //lat='52.294619944308984', lon='4.731161495112549'
+        roadsNotInDataset.put("Rijksweg A4", 1); //lat='52.294619944308984', lon='4.731161495112549'
+        roadsNotInDataset.put("A5", 1); //lat='52.294619944308984', lon='4.731161495112549'
+        roadsNotInDataset.put("A4", 1); //lat='52.24794488633926', lon='4.668793080778405'
+        roadsNotInDataset.put("N468", 2); //lat='52.24794488633926', lon='4.668793080778405'
+        roadsNotInDataset.put("N223", 2); //lat='51.98585196514408', lon='4.28407999101316',  lat='51.97391438113616', lon='4.255503797799819',
+        roadsNotInDataset.put("Klaas Engelbrechtsweg", 3); //lat='51.994826901946325', lon='4.316035831134797',
+        roadsNotInDataset.put("Burgemeester van der Goeslaan", 3); //lat='51.97867085883025', lon='4.268605020817659
+        roadsNotInDataset.put("Woudseweg", 2); //lat='51.989923882854654', lon='4.2887367524719755'
+        roadsNotInDataset.put("Oude Liermolenweg", 2); //lat='51.97852597358414', lon=4.268064963395825
+        this.blockchainService = blockchainService;
     }
-
 
     @Override
     public Boolean createCarAsset(String carId) {
         return null;
     }
 
+    /**
+     * Steps:
+     *
+     * 1: Loop for the roadInformations we got in the carInfo DONE
+     * 2: Check if we got the lat-lon combination in the local database DONE
+     * 3: If so -> add the values to the driverAsset. DONE
+     * 4: If not -> Make a remote request to the nominatim server to reverse geolocate. DONE
+     * 5: Retrieve the roadcategory and admintype from the local database. DONE
+     * 6: Add values to the driverasset. DONE
+     */
     /**
      * Processes a single ride of the user. Makes use of the openstreetmap reverse geocoding in the function
      * {@link #reverseGeoCodingOpenStreetMap()}.
@@ -43,20 +83,50 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
      */
     @Override
     public Boolean processDriverInformation(CarInfo carInfo) {
-        //First check the reverse geocoding.
-        for (RoadInformation roadinformation: carInfo.roadInformation
+        this.blockchainService.addCarInfoToDriverAsset(carInfo.getKenteken(), carInfo.getKenteken(),
+                carInfo.getMerk(), carInfo.getEmissieType());
+        int skippedRoads = 0;
+        for (RoadInformation roadinformation: carInfo.getRoadInformation()
              ) {
-            try {
+
+            ReverseRoads reverseRoads = reverseRoadRepository.findByLatAndLon(roadinformation.getLatitude(), roadinformation.getLongitude());
+            if(reverseRoads != null) { //In case we already got the lat and lon combination in the local db stored, there is no need to
+                                        //make a request to nominatim.
+                this.blockchainService.addTravelInformationToDriverAsset(reverseRoads.getRoadCategory(),reverseRoads.getStreetName(),
+                        999, roadinformation);
+            } else {
                 OpenstreetMap openstreetMap = reverseGeoCodingOpenStreetMap(roadinformation.getLatitude(), roadinformation.getLongitude());
-                Thread.sleep(1500);
-                
-                break;
+                Address address;
+                if (openstreetMap != null) {
+                    address = openstreetMap.getAddress();
+                    if(roadsNotInDataset.containsKey(address.getRoad())) {
+                        this.blockchainService.addTravelInformationToDriverAsset(roadsNotInDataset.get(address.getRoad()), address.getRoad(),
+                                9000, roadinformation);
+                    } else {
+                        Wegen wegen = wegenRepository.findWegenByStreetName(address.getRoad(), address.getTown());
+                        if(wegen != null) {
+                            System.out.println(wegen);
+                            this.blockchainService.addTravelInformationToDriverAsset(wegen.getRoadCategory(), wegen.getStreetName(), wegen.getAdminNumber(), roadinformation);
+                            reverseRoads = new ReverseRoads(roadinformation.getLatitude(), roadinformation.getLongitude(),
+                                    wegen.getRoadCategory(), wegen.getStreetName(), wegen.getRoadAdminType());
+                            reverseRoadRepository.save(reverseRoads);
+                        } else {
+                            System.out.println("Skipped this road");
+                            System.out.println(openstreetMap);
+                            skippedRoads++;
+                        }
+                    }
+                }
+            }
+            try {
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
         }
         System.out.println("Driver information processed");
-//        reverseGeoCodingOpenStreetMap(carInfo.roadInformation.get(0).latitude, carInfo.roadInformation.get(0).longitude);
+        System.out.println(skippedRoads);
         return null;
     }
 
@@ -66,7 +136,6 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
         OpenstreetMapRequest openstreetMapRequest = new OpenstreetMapRequest(lat, lon);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<OpenstreetMap> resp = restTemplate.getForEntity(url, OpenstreetMap.class);
-        System.out.println(resp);
         if (resp.getStatusCode() == HttpStatus.OK) {
             return resp.getBody();
         } else {
