@@ -96,7 +96,7 @@ public class BlockchainServiceImpl implements BlockchainService {
 
     @Override
     public void sendDataToBlockchain() throws IOException {
-        this.blockchainController = new BlockchainDriverAssetController();
+//        this.blockchainController = new BlockchainDriverAssetController();
 //        this.blockchainController.updateDriverAsset(this.driverAsset);
         System.out.println(driverAsset.toString());
     }

@@ -1,15 +1,23 @@
 package com.capgemini.ppk_blockchain.blockchain.model;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.util.Arrays;
 import java.util.HashMap;
 
+@Getter
+@Setter
+@ToString
 public class DriverAsset {
 
-    private final int METERS_IN_KILOMETER = 1000;
-    private final double HEFFING_SPITS = 1.5;
-    private final double HEFFING_NIET_SPITS = 0.8;
-    private final double PRICE_PER_KM = 0.06;
-    private final double[] MULTIPLICATION_FACTOR_ROADCATEGORIES = {0.5, 0.75, 1, 1.25, 1.5};
+
+    @ToString.Exclude private final int METERS_IN_KILOMETER = 1000;
+    @ToString.Exclude private final double HEFFING_SPITS = 1.5;
+    @ToString.Exclude private final double HEFFING_NIET_SPITS = 0.8;
+    @ToString.Exclude private final double PRICE_PER_KM = 0.06;
+    @ToString.Exclude private final double[] MULTIPLICATION_FACTOR_ROADCATEGORIES = {0.5, 0.75, 1, 1.25, 1.5};
     private String driverAssetId;
     private String licensePlate;
     private String brand;
@@ -17,7 +25,7 @@ public class DriverAsset {
     private double[] drivenKilometersOnRoads = new double[5];
 
     private double rideCosts = 0.0;
-    HashMap<String, Double> calcMap;
+    @ToString.Exclude HashMap<String, Double> calcMap;
 
     public DriverAsset() {
     }
@@ -42,38 +50,6 @@ public class DriverAsset {
         calcMap.put("6", 1.0);
         calcMap.put("E", 0.8);
         calcMap.put("Z", 0.6);
-    }
-
-    public String getDriverAssetId() {
-        return driverAssetId;
-    }
-
-    public void setDriverAssetId(String driverAssetId) {
-        this.driverAssetId = driverAssetId;
-    }
-
-    public String getLicensePlate() {
-        return licensePlate;
-    }
-
-    public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-
-    public String getEmissionType() {
-        return emissionType;
-    }
-
-    public void setEmissionType(String emissionType) {
-        this.emissionType = emissionType;
     }
 
     /**
