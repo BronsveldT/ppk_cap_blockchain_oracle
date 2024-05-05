@@ -1,18 +1,24 @@
 package com.capgemini.ppk_blockchain.blockchain.interfaceimpl;
 
 import com.capgemini.ppk_blockchain.blockchain.controllers.BlockchainDriverAssetController;
+import com.capgemini.ppk_blockchain.blockchain.controllers.BlockchainRoadAssetController;
 import com.capgemini.ppk_blockchain.blockchain.interfaces.BlockchainService;
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.blockchain.model.Road;
 import com.capgemini.ppk_blockchain.web.restmodels.RoadInformation;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
 public class BlockchainServiceImpl implements BlockchainService {
     private static final int KILOMETERS_IN_METER = 1000;
     DriverAsset driverAsset;
     Road road = null;
+
     BlockchainDriverAssetController blockchainController;
+    BlockchainRoadAssetController blockchainRoadAssetController;
+
     @Override
     public void addCarInfoToDriverAsset(String driverAssetId, String licensePlate, String brand, String emissionType) {
         this.driverAsset = new DriverAsset(driverAssetId, licensePlate, brand, emissionType);
@@ -40,7 +46,11 @@ public class BlockchainServiceImpl implements BlockchainService {
                     roadAdminName);
             if(!this.road.equals(roadCompare)) {
                 System.out.println("Sturen data door naar blockchain voor de weg.");
-                this.sendRoadDataToBlockchain(road);
+                try {
+                    this.sendRoadDataToBlockchain(road);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 road = roadCompare;
                 return;
             }
@@ -65,7 +75,11 @@ public class BlockchainServiceImpl implements BlockchainService {
                     stateName);
             if(!this.road.equalsSkippedRoad(roadCompare)) {
                 System.out.println("Sturen data door naar blockchain voor de weg.");
-                this.sendRoadDataToBlockchain(road);
+                try {
+                    this.sendRoadDataToBlockchain(road);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 road = roadCompare;
                 return;
             }
@@ -81,13 +95,16 @@ public class BlockchainServiceImpl implements BlockchainService {
     }
 
     @Override
-    public void sendDataToBlockchain() {
-        blockchainController = new BlockchainDriverAssetController();
-
+    public void sendDataToBlockchain() throws IOException {
+        this.blockchainController = new BlockchainDriverAssetController();
+//        this.blockchainController.updateDriverAsset(this.driverAsset);
+        System.out.println(driverAsset.toString());
     }
 
-    private void sendRoadDataToBlockchain(Road road) {
-        blockchainController = new BlockchainDriverAssetController();
+    private void sendRoadDataToBlockchain(Road road) throws IOException {
+        System.out.println(road.toString());
+//        this.blockchainRoadAssetController = new BlockchainRoadAssetController();
+//        this.blockchainRoadAssetController.updateRoadAsset(road);
         System.out.println("Sturen wegen data naar blockchain");
         System.out.println(road);
     }

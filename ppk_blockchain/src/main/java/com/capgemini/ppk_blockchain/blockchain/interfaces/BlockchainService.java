@@ -1,6 +1,9 @@
 package com.capgemini.ppk_blockchain.blockchain.interfaces;
 
+import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.web.restmodels.RoadInformation;
+
+import java.io.IOException;
 
 public interface BlockchainService {
     public abstract void addCarInfoToDriverAsset(String driverAssetId, String licensePlate,
@@ -20,5 +23,5 @@ public interface BlockchainService {
                                      String municipality,
                                      String stateName,
                                      double distanceTravelledInMeters);
-    public abstract void sendDataToBlockchain();
+    public abstract void sendDataToBlockchain() throws IOException;
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -119,10 +120,6 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
                                 address.getState(), //For example Noord-Holland
                                 roadinformation.getDistanceToPrev()
                         );
-//                        this.blockchainService.addRoadData(
-//
-//                        ); This doesn't work because we got no information about the road in some cases, like for
-                            //example the Doctor J.M Den Uylbrug
                     } else {
                         Wegen wegen = wegenRepository.findWegenByStreetName(address.getRoad(), address.getTown());
                         if(wegen != null) {
@@ -162,6 +159,11 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
                 e.printStackTrace();
             }
 
+        }
+        try {
+            this.blockchainService.sendDataToBlockchain();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         System.out.println("Driver information processed");
         System.out.println(skippedRoads);
