@@ -5,6 +5,7 @@ import com.capgemini.ppk_blockchain.blockchain.model.Road;
 import com.capgemini.ppk_blockchain.web.restmodels.CarInfo;
 import com.capgemini.ppk_blockchain.web.services.DriverInfoProcessServiceImpl;
 import com.capgemini.ppk_blockchain.web.services.DriverInfoRetrievalServiceImpl;
+import com.capgemini.ppk_blockchain.web.services.RoadAssetRetrievalServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +15,19 @@ import java.util.List;
 @RestController
 public class BlockchainOracleController {
 
-    @Autowired
+    final
     DriverInfoProcessServiceImpl driverInfoProcessService;
-    @Autowired
+    final
     DriverInfoRetrievalServiceImpl driverInfoRetrievalService;
+    final
+    RoadAssetRetrievalServiceImpl roadAssetRetrievalService;
+
+    public BlockchainOracleController(DriverInfoProcessServiceImpl driverInfoProcessService, DriverInfoRetrievalServiceImpl driverInfoRetrievalService, RoadAssetRetrievalServiceImpl roadAssetRetrievalService) {
+        this.driverInfoProcessService = driverInfoProcessService;
+        this.driverInfoRetrievalService = driverInfoRetrievalService;
+        this.roadAssetRetrievalService = roadAssetRetrievalService;
+    }
+
     /**
      * The public available request point to retrieve information about a specific car from the ledger.
      * To process information of a single ride by the user see {@link #processRideOfCar(CarInfo)}
@@ -88,8 +98,13 @@ public class BlockchainOracleController {
         return carInfo;
     }
     
-    @GetMapping
+    @GetMapping("/road/retrieve/{roadName}")
     List<Road> retrieveRoadAsset(@PathVariable String roadName) {
+        return this.roadAssetRetrievalService.retrieveRoads(roadName);
+    }
 
+    @GetMapping("/road/retrieve/{municipality}")
+    List<Road> retrieveRoadsByMunicipality(@PathVariable String municipality) {
+        return this.roadAssetRetrievalService.retrieveRoadsByMunicipality(municipality);
     }
 }

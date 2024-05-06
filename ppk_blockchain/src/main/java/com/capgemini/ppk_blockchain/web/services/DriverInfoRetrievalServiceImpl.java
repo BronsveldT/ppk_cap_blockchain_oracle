@@ -18,7 +18,7 @@ public class DriverInfoRetrievalServiceImpl implements DriverInfoRetrievalServic
 
     @Override
     public DriverAsset retrieveDriverAsset(String id) {
-
+        return null;
     }
 
     @Override

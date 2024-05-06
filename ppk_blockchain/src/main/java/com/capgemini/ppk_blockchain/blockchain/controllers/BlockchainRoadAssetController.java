@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import org.hyperledger.fabric.gateway.*;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -130,7 +131,7 @@ public class BlockchainRoadAssetController {
      * @param roadId
      * @return
      */
-    public Road readRoadAsset(String roadId) {
+    public List<Road> readRoadAsset(String roadId) {
         String resp = null;
 
         try (Gateway gateway = builder.connect()) {
@@ -143,9 +144,31 @@ public class BlockchainRoadAssetController {
         }
         System.out.println("Check dit thomas!");
         System.out.println(resp);
-        return gson.fromJson(resp, Road.class);
+        Type listType = new TypeToken<List<Road>>() {}.getType();
+        return gson.fromJson(resp, listType);
     }
 
+    /**
+     *
+     * @param roadId
+     * @return
+     */
+    public List<Road> retrieveRoadsByMunicipality(String municipality) {
+        String resp = null;
+
+        try (Gateway gateway = builder.connect()) {
+            network = gateway.getNetwork("fabric_test");
+            contract = network.getContract("roadAsset");
+            byte[] readDriverAsset = contract.evaluateTransaction("readRoadByMunicipality", municipality);
+            resp = new String(readDriverAsset, StandardCharsets.UTF_8);
+        } catch (ContractException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Check dit thomas!");
+        System.out.println(resp);
+        Type listType = new TypeToken<List<Road>>() {}.getType();
+        return gson.fromJson(resp, listType);
+    }
     /**
      *
      * @return

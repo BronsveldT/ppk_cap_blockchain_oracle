@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface RoadAssetRetrievalService {
     public abstract List<Road> retrieveRoads(String roadName);
+    public abstract List<Road> retrieveRoadsByMunicipality(String municipalityName);
 }
