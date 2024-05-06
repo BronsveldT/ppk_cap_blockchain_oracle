@@ -1,6 +1,7 @@
 package com.capgemini.ppk_blockchain.blockchain.model;
 
 import lombok.*;
+import org.apache.commons.lang3.builder.ToStringExclude;
 
 import java.util.Objects;
 
@@ -9,7 +10,7 @@ import java.util.Objects;
 @Setter
 @ToString
 public class Road {
-    private static final String[] roadCategoryNumberToRoadAdminType = {"R", "P", "G", "W", "O"};
+    @ToStringExclude private static final String[] roadCategoryNumberToRoadAdminType = {"R", "P", "G", "W", "O"};
     private String roadAdminType;
     private String streetName;
     private int adminNumber;
