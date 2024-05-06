@@ -1,9 +1,11 @@
 package com.capgemini.ppk_blockchain.web.controllers;
 
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
+import com.capgemini.ppk_blockchain.blockchain.model.Road;
 import com.capgemini.ppk_blockchain.web.restmodels.CarInfo;
 import com.capgemini.ppk_blockchain.web.services.DriverInfoProcessServiceImpl;
 import com.capgemini.ppk_blockchain.web.services.DriverInfoRetrievalServiceImpl;
+import com.capgemini.ppk_blockchain.web.services.RoadAssetRetrievalServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,19 +15,31 @@ import java.util.List;
 @RestController
 public class BlockchainOracleController {
 
-    @Autowired
+    final
     DriverInfoProcessServiceImpl driverInfoProcessService;
-    @Autowired
+    final
     DriverInfoRetrievalServiceImpl driverInfoRetrievalService;
+    final
+    RoadAssetRetrievalServiceImpl roadAssetRetrievalService;
+
+    public BlockchainOracleController(DriverInfoProcessServiceImpl driverInfoProcessService, DriverInfoRetrievalServiceImpl driverInfoRetrievalService, RoadAssetRetrievalServiceImpl roadAssetRetrievalService) {
+        this.driverInfoProcessService = driverInfoProcessService;
+        this.driverInfoRetrievalService = driverInfoRetrievalService;
+        this.roadAssetRetrievalService = roadAssetRetrievalService;
+    }
+
     /**
      * The public available request point to retrieve information about a specific car from the ledger.
      * To process information of a single ride by the user see {@link #processRideOfCar(CarInfo)}
-     * @param carInfo
+     * @param String id
      * @return
      */
-    @GetMapping("/car/{id}/retrieve")
-    CarInfo retrieveCarInfo(@RequestBody CarInfo carInfo) {
-        return carInfo;
+    @GetMapping("/car/retrieve/{id}")
+    DriverAsset retrieveCarInfo(@PathVariable String id) {
+        if(driverInfoRetrievalService.checkForDriverAssetExistence(id)) {
+            return driverInfoRetrievalService.retrieveDriverAsset(id);
+        }
+        return null;
     }
 
     @GetMapping("/car/{id}/getHistory")
@@ -53,7 +67,7 @@ public class BlockchainOracleController {
      * @return false/true depending on the existence of the Asset.
      *
      */
-    @GetMapping("/car/checkForExistence/{id}")
+    @GetMapping("/car/checkForExistence/{carId}")
     boolean checkForExistenceCar(@PathVariable String carId) {
         boolean existenceCar = false;
         if (!driverInfoRetrievalService.checkForDriverAssetExistence(carId)) {
@@ -84,5 +98,13 @@ public class BlockchainOracleController {
         return carInfo;
     }
     
+    @GetMapping("/road/retrieve/{roadName}")
+    List<Road> retrieveRoadAsset(@PathVariable String roadName) {
+        return this.roadAssetRetrievalService.retrieveRoads(roadName);
+    }
 
+    @GetMapping("/road/retrieve/{municipality}")
+    List<Road> retrieveRoadsByMunicipality(@PathVariable String municipality) {
+        return this.roadAssetRetrievalService.retrieveRoadsByMunicipality(municipality);
+    }
 }

@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import org.hyperledger.fabric.gateway.*;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,8 +46,8 @@ public class BlockchainRoadAssetController {
         String resp = null;
         boolean check = false;
         try (Gateway gateway = builder.connect()) {
-            network = gateway.getNetwork("driverassets");
-            contract = network.getContract("basic");
+            network = gateway.getNetwork("fabric_test");
+            contract = network.getContract("roadAsset");
             byte[] updateDriverAsset = contract.evaluateTransaction("driverAssetExists", roadAssetId);
             resp = new String(updateDriverAsset, StandardCharsets.UTF_8);
             check = Boolean.parseBoolean(resp);
@@ -64,7 +65,7 @@ public class BlockchainRoadAssetController {
     public Road createDriverAsset(Road road) {
         String resp = null;
         try (Gateway gateway = builder.connect()) {
-            network = gateway.getNetwork("ppk_blockchain");
+            network = gateway.getNetwork("fabric_test");
             contract = network.getContract("roadAsset");
             byte[] createDriverAssetResult = contract.submitTransaction("createRoadAsset", road.getRoadId(),
                     road.getRoadAdminType(),
@@ -99,7 +100,7 @@ public class BlockchainRoadAssetController {
     public Road updateRoadAsset(Road road) {
         String resp = null;
         try (Gateway gateway = builder.connect()) { //connect with the blockchain through the gateway and its certificates.
-            network = gateway.getNetwork("ppk_blockchain");
+            network = gateway.getNetwork("fabric_test");
             contract = network.getContract("roadAsset");
             byte[] createDriverAssetResult = contract.submitTransaction("updateRoadAsset", road.getRoadId(),
                     road.getRoadAdminType(),
@@ -130,11 +131,11 @@ public class BlockchainRoadAssetController {
      * @param roadId
      * @return
      */
-    public Road readRoadAsset(String roadId) {
+    public List<Road> readRoadAsset(String roadId) {
         String resp = null;
 
         try (Gateway gateway = builder.connect()) {
-            network = gateway.getNetwork("ppk_chaincode");
+            network = gateway.getNetwork("fabric_test");
             contract = network.getContract("roadAsset");
             byte[] readDriverAsset = contract.evaluateTransaction("readRoadAsset", roadId);
             resp = new String(readDriverAsset, StandardCharsets.UTF_8);
@@ -143,9 +144,31 @@ public class BlockchainRoadAssetController {
         }
         System.out.println("Check dit thomas!");
         System.out.println(resp);
-        return gson.fromJson(resp, Road.class);
+        Type listType = new TypeToken<List<Road>>() {}.getType();
+        return gson.fromJson(resp, listType);
     }
 
+    /**
+     *
+     * @param roadId
+     * @return
+     */
+    public List<Road> retrieveRoadsByMunicipality(String municipality) {
+        String resp = null;
+
+        try (Gateway gateway = builder.connect()) {
+            network = gateway.getNetwork("fabric_test");
+            contract = network.getContract("roadAsset");
+            byte[] readDriverAsset = contract.evaluateTransaction("readRoadByMunicipality", municipality);
+            resp = new String(readDriverAsset, StandardCharsets.UTF_8);
+        } catch (ContractException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Check dit thomas!");
+        System.out.println(resp);
+        Type listType = new TypeToken<List<Road>>() {}.getType();
+        return gson.fromJson(resp, listType);
+    }
     /**
      *
      * @return
