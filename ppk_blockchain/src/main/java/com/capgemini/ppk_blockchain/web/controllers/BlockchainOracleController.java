@@ -1,7 +1,9 @@
 package com.capgemini.ppk_blockchain.web.controllers;
 
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
-import com.capgemini.ppk_blockchain.web.models.CarInfo;
+import com.capgemini.ppk_blockchain.web.restmodels.CarInfo;
+import com.capgemini.ppk_blockchain.web.services.DriverInfoProcessServiceImpl;
+import com.capgemini.ppk_blockchain.web.services.DriverInfoRetrievalServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +13,10 @@ import java.util.List;
 @RestController
 public class BlockchainOracleController {
 
-//    @Autowired
-
+    @Autowired
+    DriverInfoProcessServiceImpl driverInfoProcessService;
+    @Autowired
+    DriverInfoRetrievalServiceImpl driverInfoRetrievalService;
     /**
      * The public available request point to retrieve information about a specific car from the ledger.
      * To process information of a single ride by the user see {@link #processRideOfCar(CarInfo)}
@@ -51,8 +55,12 @@ public class BlockchainOracleController {
      */
     @GetMapping("/car/checkForExistence/{id}")
     boolean checkForExistenceCar(@PathVariable String carId) {
-
-        return false;
+        boolean existenceCar = false;
+        if (!driverInfoRetrievalService.checkForDriverAssetExistence(carId)) {
+            driverInfoProcessService.createCarAsset(carId);
+            existenceCar = true;
+        }
+        return existenceCar;
     }
 
     /**
@@ -72,7 +80,7 @@ public class BlockchainOracleController {
      */
     @PostMapping("/car/processDrivingInformation")
     CarInfo processRideOfCar(@RequestBody CarInfo carInfo) {
-
+        driverInfoProcessService.processDriverInformation(carInfo);
         return carInfo;
     }
     
