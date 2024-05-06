@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Driver;
 import java.util.List;
 
 @RestController
@@ -93,9 +94,8 @@ public class BlockchainOracleController {
      * @return
      */
     @PostMapping("/car/processDrivingInformation")
-    CarInfo processRideOfCar(@RequestBody CarInfo carInfo) {
-        driverInfoProcessService.processDriverInformation(carInfo);
-        return carInfo;
+    double processRideOfCar(@RequestBody CarInfo carInfo) {
+        return driverInfoProcessService.processDriverInformation(carInfo);
     }
     
     @GetMapping("/road/retrieve/{roadName}")

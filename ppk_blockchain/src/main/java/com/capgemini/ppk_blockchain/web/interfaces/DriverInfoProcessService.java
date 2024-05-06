@@ -4,5 +4,5 @@ import com.capgemini.ppk_blockchain.web.restmodels.CarInfo;
 
 public interface DriverInfoProcessService {
     public abstract Boolean createCarAsset(String carId);
-    public abstract Boolean processDriverInformation(CarInfo carInfo);
+    public abstract double processDriverInformation(CarInfo carInfo);
 }
