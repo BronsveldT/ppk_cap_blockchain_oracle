@@ -101,11 +101,20 @@ public class BlockchainServiceImpl implements BlockchainService {
         System.out.println(driverAsset.toString());
     }
 
+    /**
+     *
+     * @param road
+     * @throws IOException
+     */
     private void sendRoadDataToBlockchain(Road road) throws IOException {
-        System.out.println(road.toString());
-//        this.blockchainRoadAssetController = new BlockchainRoadAssetController();
-//        this.blockchainRoadAssetController.updateRoadAsset(road);
-        System.out.println("Sturen wegen data naar blockchain");
-        System.out.println(road);
+//        streetName + adminNumber + roadAdminType
+        road.setRoadId(String.valueOf(road.hashCode()));
+
+        this.blockchainRoadAssetController = new BlockchainRoadAssetController();
+        if(!this.blockchainRoadAssetController.checkForRoadAssetExistence(road.getRoadId())) {
+            this.blockchainRoadAssetController.createDriverAsset(road);
+        } else {
+            this.blockchainRoadAssetController.updateRoadAsset(road);
+        }
     }
 }

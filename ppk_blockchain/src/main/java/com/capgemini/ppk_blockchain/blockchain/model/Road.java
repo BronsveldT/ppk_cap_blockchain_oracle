@@ -11,6 +11,7 @@ import java.util.Objects;
 @ToString
 public class Road {
     @ToStringExclude private static final String[] roadCategoryNumberToRoadAdminType = {"R", "P", "G", "W", "O"};
+    private String roadId;
     private String roadAdminType;
     private String streetName;
     private int adminNumber;
@@ -19,6 +20,27 @@ public class Road {
     private String roadAdminName;
     private String municipality;
     private String state;
+
+    public Road(String roadId,
+                String roadAdminType,
+                String streetName,
+                int adminNumber,
+                double distanceTravelledOn,
+                String adminName,
+                String roadAdminName,
+                String municipality,
+                String state) {
+
+        this.roadId = roadId;
+        this.roadAdminType = roadAdminType;
+        this.streetName = streetName;
+        this.adminNumber = adminNumber;
+        this.distanceTravelledOn = distanceTravelledOn;
+        this.adminName = adminName;
+        this.roadAdminName = roadAdminName;
+        this.municipality = municipality;
+        this.state = state;
+    }
 
     public Road(String roadAdminType, String streetName, int adminNumber, String adminName, String roadAdminName) {
         this.roadAdminType = roadAdminType;
@@ -58,6 +80,6 @@ public class Road {
 
     @Override
     public int hashCode() {
-        return Objects.hash(roadAdminType, streetName, adminNumber, adminName, roadAdminName);
+        return Objects.hash(getRoadAdminType(), getStreetName(), getAdminNumber(), getDistanceTravelledOn(), getAdminName(), getRoadAdminName(), getMunicipality(), getState());
     }
 }
