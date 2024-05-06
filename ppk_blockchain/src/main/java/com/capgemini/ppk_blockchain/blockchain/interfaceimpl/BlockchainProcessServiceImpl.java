@@ -31,6 +31,7 @@ public class BlockchainProcessServiceImpl implements BlockchainService {
                 streetName,
                 roadInformation.getDistanceToPrev(),
                 roadInformation.getSpits());
+
     }
 
     @Override
@@ -116,5 +117,9 @@ public class BlockchainProcessServiceImpl implements BlockchainService {
         } else {
             this.blockchainRoadAssetController.updateRoadAsset(road);
         }
+    }
+
+    public double retrieveRideCosts(){
+        return this.driverAsset.getRideCosts();
     }
 }

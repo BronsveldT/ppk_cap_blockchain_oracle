@@ -1,5 +1,6 @@
 package com.capgemini.ppk_blockchain.blockchain.interfaceimpl;
 
+import com.capgemini.ppk_blockchain.blockchain.controllers.BlockchainDriverAssetController;
 import com.capgemini.ppk_blockchain.blockchain.controllers.BlockchainRoadAssetController;
 import com.capgemini.ppk_blockchain.blockchain.interfaces.BlockchainRetrievalService;
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
@@ -11,11 +12,11 @@ import java.util.List;
 @Service
 public class BlockchainRetrieveServiceImpl implements BlockchainRetrievalService {
     BlockchainRoadAssetController blockchainRoadAssetController;
-
+    BlockchainDriverAssetController blockchainDriverAssetController;
 
     @Override
     public DriverAsset retrieveDriverAsset(String driverId) {
-        return null;
+        return this.blockchainDriverAssetController.readDriverAsset(driverId);
     }
 
     @Override
@@ -31,6 +32,11 @@ public class BlockchainRetrieveServiceImpl implements BlockchainRetrievalService
     @Override
     public List<Road> retrieveRoadsByMunicipality(String municipality) {
         return this.blockchainRoadAssetController.retrieveRoadsByMunicipality(municipality);
+    }
+
+    @Override
+    public boolean checkForDriverAssetExists(String driverId) {
+        return this.blockchainDriverAssetController.checkForDriverAssetExistence(driverId);
     }
 
 

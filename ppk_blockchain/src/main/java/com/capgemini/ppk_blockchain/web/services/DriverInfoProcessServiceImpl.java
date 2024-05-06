@@ -79,7 +79,7 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
      * @return
      */
     @Override
-    public Boolean processDriverInformation(CarInfo carInfo) {
+    public double processDriverInformation(CarInfo carInfo) {
         this.blockchainService.addCarInfoToDriverAsset(carInfo.getKenteken(), carInfo.getKenteken(),
                 carInfo.getMerk(), carInfo.getEmissieType());
         int skippedRoads = 0;
@@ -90,7 +90,6 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
             if(reverseRoads != null) { //In case we already got the lat and lon combination in the local db stored, there is no need to
                                         //make a request to nominatim.
                 this.blockchainService.addTravelInformationToDriverAsset(reverseRoads.getRoadCategory(),reverseRoads.getStreetName(), roadinformation);
-                System.out.println(reverseRoads);
                 this.blockchainService.addRoadData(
                         reverseRoads.getRoadAdminType(),
                         reverseRoads.getStreetName(),
@@ -107,8 +106,6 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
                     if(roadsNotInDataset.containsKey(address.getRoad())) {
                         this.blockchainService.addTravelInformationToDriverAsset(roadsNotInDataset.get(address.getRoad()), address.getRoad(),
                                 roadinformation);
-                        System.out.println("Skipped road");
-                        System.out.println(address);
                         this.blockchainService.addRoadData(
                                 roadsNotInDataset.get(address.getRoad()), //For example 2 gets passed here.
                                 address.getRoad(),
@@ -163,7 +160,7 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
         }
         System.out.println("Driver information processed");
         System.out.println(skippedRoads);
-        return null;
+        return this.blockchainService.retrieveRideCosts();
     }
 
     private OpenstreetMap reverseGeoCodingOpenStreetMap(double lat, double lon) {
