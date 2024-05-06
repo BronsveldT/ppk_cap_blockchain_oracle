@@ -1,24 +1,20 @@
 package com.capgemini.ppk_blockchain.web.services;
 
-import com.capgemini.ppk_blockchain.blockchain.interfaceimpl.BlockchainServiceImpl;
-import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
+import com.capgemini.ppk_blockchain.blockchain.interfaceimpl.BlockchainProcessServiceImpl;
 import com.capgemini.ppk_blockchain.web.db.models.ReverseRoads;
 import com.capgemini.ppk_blockchain.web.db.models.Wegen;
 import com.capgemini.ppk_blockchain.web.interfaces.DriverInfoProcessService;
 import com.capgemini.ppk_blockchain.web.repositories.ReverseRoadRepository;
 import com.capgemini.ppk_blockchain.web.repositories.WegenRepository;
 import com.capgemini.ppk_blockchain.web.restmodels.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.List;
 
 @Service
 public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
@@ -30,10 +26,10 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
     final
     ReverseRoadRepository reverseRoadRepository;
     final
-    BlockchainServiceImpl blockchainService;
+    BlockchainProcessServiceImpl blockchainService;
 
     HashMap<String, Integer> roadsNotInDataset;
-    public DriverInfoProcessServiceImpl(WegenRepository wegenRepository, ReverseRoadRepository reverseRoadRepository, BlockchainServiceImpl blockchainService) {
+    public DriverInfoProcessServiceImpl(WegenRepository wegenRepository, ReverseRoadRepository reverseRoadRepository, BlockchainProcessServiceImpl blockchainService) {
         this.wegenRepository = wegenRepository;
         this.reverseRoadRepository = reverseRoadRepository;
         roadsNotInDataset = new HashMap<>();

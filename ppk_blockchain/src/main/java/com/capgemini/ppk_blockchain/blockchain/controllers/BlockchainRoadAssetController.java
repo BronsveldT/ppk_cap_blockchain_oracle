@@ -45,8 +45,8 @@ public class BlockchainRoadAssetController {
         String resp = null;
         boolean check = false;
         try (Gateway gateway = builder.connect()) {
-            network = gateway.getNetwork("driverassets");
-            contract = network.getContract("basic");
+            network = gateway.getNetwork("fabric_test");
+            contract = network.getContract("roadAsset");
             byte[] updateDriverAsset = contract.evaluateTransaction("driverAssetExists", roadAssetId);
             resp = new String(updateDriverAsset, StandardCharsets.UTF_8);
             check = Boolean.parseBoolean(resp);
@@ -64,7 +64,7 @@ public class BlockchainRoadAssetController {
     public Road createDriverAsset(Road road) {
         String resp = null;
         try (Gateway gateway = builder.connect()) {
-            network = gateway.getNetwork("ppk_blockchain");
+            network = gateway.getNetwork("fabric_test");
             contract = network.getContract("roadAsset");
             byte[] createDriverAssetResult = contract.submitTransaction("createRoadAsset", road.getRoadId(),
                     road.getRoadAdminType(),
@@ -99,7 +99,7 @@ public class BlockchainRoadAssetController {
     public Road updateRoadAsset(Road road) {
         String resp = null;
         try (Gateway gateway = builder.connect()) { //connect with the blockchain through the gateway and its certificates.
-            network = gateway.getNetwork("ppk_blockchain");
+            network = gateway.getNetwork("fabric_test");
             contract = network.getContract("roadAsset");
             byte[] createDriverAssetResult = contract.submitTransaction("updateRoadAsset", road.getRoadId(),
                     road.getRoadAdminType(),
@@ -134,7 +134,7 @@ public class BlockchainRoadAssetController {
         String resp = null;
 
         try (Gateway gateway = builder.connect()) {
-            network = gateway.getNetwork("ppk_chaincode");
+            network = gateway.getNetwork("fabric_test");
             contract = network.getContract("roadAsset");
             byte[] readDriverAsset = contract.evaluateTransaction("readRoadAsset", roadId);
             resp = new String(readDriverAsset, StandardCharsets.UTF_8);

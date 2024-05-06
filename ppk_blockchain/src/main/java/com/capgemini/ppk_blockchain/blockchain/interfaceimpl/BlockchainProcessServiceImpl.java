@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
-public class BlockchainServiceImpl implements BlockchainService {
+public class BlockchainProcessServiceImpl implements BlockchainService {
     private static final int KILOMETERS_IN_METER = 1000;
     DriverAsset driverAsset;
     Road road = null;

@@ -11,8 +11,8 @@ public class PpkBlockchainApplication {
 	public static void main(String[] args) {
 
 		SpringApplication.run(PpkBlockchainApplication.class, args);
-//		EnrollAdmin.enroll();
-//		RegisterUser.enroll();
+		EnrollAdmin.enroll();
+		RegisterUser.enroll();
 	}
 
 }

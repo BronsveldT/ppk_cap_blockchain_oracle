@@ -1,6 +1,7 @@
 package com.capgemini.ppk_blockchain.web.controllers;
 
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
+import com.capgemini.ppk_blockchain.blockchain.model.Road;
 import com.capgemini.ppk_blockchain.web.restmodels.CarInfo;
 import com.capgemini.ppk_blockchain.web.services.DriverInfoProcessServiceImpl;
 import com.capgemini.ppk_blockchain.web.services.DriverInfoRetrievalServiceImpl;
@@ -20,12 +21,15 @@ public class BlockchainOracleController {
     /**
      * The public available request point to retrieve information about a specific car from the ledger.
      * To process information of a single ride by the user see {@link #processRideOfCar(CarInfo)}
-     * @param carInfo
+     * @param String id
      * @return
      */
-    @GetMapping("/car/{id}/retrieve")
-    CarInfo retrieveCarInfo(@RequestBody CarInfo carInfo) {
-        return carInfo;
+    @GetMapping("/car/retrieve/{id}")
+    DriverAsset retrieveCarInfo(@PathVariable String id) {
+        if(driverInfoRetrievalService.checkForDriverAssetExistence(id)) {
+            return driverInfoRetrievalService.retrieveDriverAsset(id);
+        }
+        return null;
     }
 
     @GetMapping("/car/{id}/getHistory")
@@ -53,7 +57,7 @@ public class BlockchainOracleController {
      * @return false/true depending on the existence of the Asset.
      *
      */
-    @GetMapping("/car/checkForExistence/{id}")
+    @GetMapping("/car/checkForExistence/{carId}")
     boolean checkForExistenceCar(@PathVariable String carId) {
         boolean existenceCar = false;
         if (!driverInfoRetrievalService.checkForDriverAssetExistence(carId)) {
@@ -84,5 +88,8 @@ public class BlockchainOracleController {
         return carInfo;
     }
     
+    @GetMapping
+    List<Road> retrieveRoadAsset(@PathVariable String roadName) {
 
+    }
 }

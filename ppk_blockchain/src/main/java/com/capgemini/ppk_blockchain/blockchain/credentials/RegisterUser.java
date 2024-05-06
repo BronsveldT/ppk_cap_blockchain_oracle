@@ -29,7 +29,7 @@ public class RegisterUser {
     public static void enroll() {
         Properties props = new Properties();
         props.put("pemFile",
-                "../network/network-specifics/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
+                "../../fabric-samples/test-network/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem");
         props.put("allowAllHostNames", "true");
 
         try {
