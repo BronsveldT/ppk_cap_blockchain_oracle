@@ -2,8 +2,11 @@ package com.capgemini.ppk_blockchain.blockchain.interfaces;
 
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.web.restmodels.RoadInformation;
+import org.hyperledger.fabric.client.*;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.cert.CertificateException;
 
 public interface BlockchainService {
     public abstract void addCarInfoToDriverAsset(String driverAssetId, String licensePlate,
@@ -16,12 +19,12 @@ public interface BlockchainService {
              Integer adminNumber,
              String adminName,
              String roadAdminName,
-             double metersTravelled);
+             double metersTravelled) throws CommitException, GatewayException;
 
     public abstract void addRoadData(int roadCategory,
                                      String streetName,
                                      String municipality,
                                      String stateName,
-                                     double distanceTravelledInMeters);
-    public abstract void sendDataToBlockchain() throws IOException;
+                                     double distanceTravelledInMeters) throws CommitException, GatewayException;
+    public abstract void sendDataToBlockchain() throws IOException, CertificateException, InvalidKeyException, EndorseException, CommitException, SubmitException, CommitStatusException;
 }

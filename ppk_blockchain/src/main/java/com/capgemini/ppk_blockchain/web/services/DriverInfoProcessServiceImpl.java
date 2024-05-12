@@ -7,12 +7,16 @@ import com.capgemini.ppk_blockchain.web.interfaces.DriverInfoProcessService;
 import com.capgemini.ppk_blockchain.web.repositories.ReverseRoadRepository;
 import com.capgemini.ppk_blockchain.web.repositories.WegenRepository;
 import com.capgemini.ppk_blockchain.web.restmodels.*;
+import org.hyperledger.fabric.client.CommitException;
+import org.hyperledger.fabric.client.GatewayException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.cert.CertificateException;
 import java.time.Duration;
 import java.util.HashMap;
 
@@ -79,7 +83,7 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
      * @return
      */
     @Override
-    public double processDriverInformation(CarInfo carInfo) {
+    public double processDriverInformation(CarInfo carInfo) throws CommitException, GatewayException {
         this.blockchainService.addCarInfoToDriverAsset(carInfo.getKenteken(), carInfo.getKenteken(),
                 carInfo.getMerk(), carInfo.getEmissieType());
         int skippedRoads = 0;
@@ -157,6 +161,10 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
             this.blockchainService.sendDataToBlockchain();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (CertificateException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
         }
         System.out.println("Driver information processed");
         System.out.println(skippedRoads);

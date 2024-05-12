@@ -5,6 +5,7 @@ import com.capgemini.ppk_blockchain.blockchain.controllers.BlockchainRoadAssetCo
 import com.capgemini.ppk_blockchain.blockchain.interfaces.BlockchainRetrievalService;
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.blockchain.model.Road;
+import org.hyperledger.fabric.client.GatewayException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class BlockchainRetrieveServiceImpl implements BlockchainRetrievalService
     BlockchainDriverAssetController blockchainDriverAssetController;
 
     @Override
-    public DriverAsset retrieveDriverAsset(String driverId) {
+    public DriverAsset retrieveDriverAsset(String driverId) throws GatewayException {
         return this.blockchainDriverAssetController.readDriverAsset(driverId);
     }
 

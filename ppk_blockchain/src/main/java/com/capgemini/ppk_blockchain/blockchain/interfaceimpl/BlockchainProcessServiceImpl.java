@@ -6,9 +6,12 @@ import com.capgemini.ppk_blockchain.blockchain.interfaces.BlockchainService;
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.blockchain.model.Road;
 import com.capgemini.ppk_blockchain.web.restmodels.RoadInformation;
+import org.hyperledger.fabric.client.*;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.cert.CertificateException;
 
 @Service
 public class BlockchainProcessServiceImpl implements BlockchainService {
@@ -38,7 +41,7 @@ public class BlockchainProcessServiceImpl implements BlockchainService {
     public void addRoadData(String roadAdminType, String streetName,
                             Integer adminNumber,
                             String adminName, String roadAdminName,
-                            double metersTravelled) {
+                            double metersTravelled) throws CommitException, GatewayException {
         if(this.road != null) {
             Road roadCompare = new Road(roadAdminType,
                     streetName,
@@ -68,7 +71,7 @@ public class BlockchainProcessServiceImpl implements BlockchainService {
     }
 
     @Override
-    public void addRoadData(int roadCategory, String streetName, String municipality, String stateName, double distanceTravelledInMeters) {
+    public void addRoadData(int roadCategory, String streetName, String municipality, String stateName, double distanceTravelledInMeters) throws CommitException, GatewayException {
         if(this.road != null) {
             Road roadCompare = new Road(roadCategory,
                     streetName,
@@ -96,9 +99,9 @@ public class BlockchainProcessServiceImpl implements BlockchainService {
     }
 
     @Override
-    public void sendDataToBlockchain() throws IOException {
-//        this.blockchainController = new BlockchainDriverAssetController();
-//        this.blockchainController.updateDriverAsset(this.driverAsset);
+    public void sendDataToBlockchain() throws IOException, CertificateException, InvalidKeyException, EndorseException, CommitException, SubmitException, CommitStatusException {
+        this.blockchainController = new BlockchainDriverAssetController();
+        this.blockchainController.updateDriverAsset(this.driverAsset);
         System.out.println(driverAsset.toString());
     }
 
@@ -107,11 +110,17 @@ public class BlockchainProcessServiceImpl implements BlockchainService {
      * @param road
      * @throws IOException
      */
-    private void sendRoadDataToBlockchain(Road road) throws IOException {
+    private void sendRoadDataToBlockchain(Road road) throws IOException, GatewayException, CommitException {
 //        streetName + adminNumber + roadAdminType
         road.setRoadId(String.valueOf(road.hashCode()));
 
-        this.blockchainRoadAssetController = new BlockchainRoadAssetController();
+        try {
+            this.blockchainRoadAssetController = new BlockchainRoadAssetController();
+        } catch (CertificateException e) {
+            throw new RuntimeException(e);
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
         if(!this.blockchainRoadAssetController.checkForRoadAssetExistence(road.getRoadId())) {
             this.blockchainRoadAssetController.createDriverAsset(road);
         } else {
