@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface WegenRepository extends CrudRepository<Wegen, Integer> {
-    @Query(value = "SELECT * FROM WEGEN WHERE street_name = :streetName AND wps_name = :placeName", nativeQuery = true)
+    @Query(value = "SELECT * FROM wegen WHERE street_name = :streetName AND wps_name = :placeName", nativeQuery = true)
     Wegen findWegenByStreetName(String streetName, String placeName);
 
 }

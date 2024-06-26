@@ -4,6 +4,7 @@ import com.capgemini.ppk_blockchain.blockchain.interfaceimpl.BlockchainProcessSe
 import com.capgemini.ppk_blockchain.blockchain.interfaceimpl.BlockchainRetrieveServiceImpl;
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.web.interfaces.DriverInfoRetrievalService;
+import org.hyperledger.fabric.client.GatewayException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class DriverInfoRetrievalServiceImpl implements DriverInfoRetrievalServic
     }
 
     @Override
-    public DriverAsset retrieveDriverAsset(String id) {
+    public DriverAsset retrieveDriverAsset(String id) throws GatewayException {
         return this.blockchainRetrieveService.retrieveDriverAsset(id);
     }
 

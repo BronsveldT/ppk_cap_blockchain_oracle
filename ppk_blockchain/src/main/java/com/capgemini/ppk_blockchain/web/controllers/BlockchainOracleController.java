@@ -6,6 +6,8 @@ import com.capgemini.ppk_blockchain.web.restmodels.CarInfo;
 import com.capgemini.ppk_blockchain.web.services.DriverInfoProcessServiceImpl;
 import com.capgemini.ppk_blockchain.web.services.DriverInfoRetrievalServiceImpl;
 import com.capgemini.ppk_blockchain.web.services.RoadAssetRetrievalServiceImpl;
+import org.hyperledger.fabric.client.CommitException;
+import org.hyperledger.fabric.client.GatewayException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +38,7 @@ public class BlockchainOracleController {
      * @return
      */
     @GetMapping("/car/retrieve/{id}")
-    DriverAsset retrieveCarInfo(@PathVariable String id) {
+    DriverAsset retrieveCarInfo(@PathVariable String id) throws GatewayException {
         if(driverInfoRetrievalService.checkForDriverAssetExistence(id)) {
             return driverInfoRetrievalService.retrieveDriverAsset(id);
         }
@@ -94,7 +96,7 @@ public class BlockchainOracleController {
      * @return
      */
     @PostMapping("/car/processDrivingInformation")
-    double processRideOfCar(@RequestBody CarInfo carInfo) {
+    double processRideOfCar(@RequestBody CarInfo carInfo) throws CommitException, GatewayException {
         return driverInfoProcessService.processDriverInformation(carInfo);
     }
     
