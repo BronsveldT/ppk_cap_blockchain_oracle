@@ -26,5 +26,5 @@ public interface BlockchainService {
                                      String municipality,
                                      String stateName,
                                      double distanceTravelledInMeters) throws CommitException, GatewayException;
-    public abstract void sendDataToBlockchain() throws IOException, CertificateException, InvalidKeyException, EndorseException, CommitException, SubmitException, CommitStatusException;
+    public abstract void sendDataToBlockchain() throws IOException, CertificateException, InvalidKeyException, GatewayException, CommitException;
 }

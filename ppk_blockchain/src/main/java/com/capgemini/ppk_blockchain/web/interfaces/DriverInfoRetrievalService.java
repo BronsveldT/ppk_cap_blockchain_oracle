@@ -6,7 +6,7 @@ import org.hyperledger.fabric.client.GatewayException;
 import java.util.List;
 
 public interface DriverInfoRetrievalService {
-    public abstract Boolean checkForDriverAssetExistence(String id);
+    public abstract Boolean checkForDriverAssetExistence(String id) throws GatewayException;
     public abstract DriverAsset retrieveDriverAsset(String id) throws GatewayException;
     public abstract List<DriverAsset> retrieveAllDriverAssets();
 }

@@ -36,7 +36,7 @@ public class BlockchainRetrieveServiceImpl implements BlockchainRetrievalService
     }
 
     @Override
-    public boolean checkForDriverAssetExists(String driverId) {
+    public boolean checkForDriverAssetExists(String driverId) throws GatewayException {
         return this.blockchainDriverAssetController.checkForDriverAssetExistence(driverId);
     }
 

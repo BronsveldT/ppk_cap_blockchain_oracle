@@ -99,10 +99,17 @@ public class BlockchainProcessServiceImpl implements BlockchainService {
     }
 
     @Override
-    public void sendDataToBlockchain() throws IOException, CertificateException, InvalidKeyException, EndorseException, CommitException, SubmitException, CommitStatusException {
-        this.blockchainController = new BlockchainDriverAssetController();
+    public void sendDataToBlockchain() throws IOException, CertificateException, GatewayException, CommitException {
+        try {
+            this.blockchainController = new BlockchainDriverAssetController();
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(!this.blockchainController.checkForDriverAssetExistence(this.driverAsset.getDriverAssetId())){
+            this.blockchainController.createDriverAsset(this.driverAsset.getDriverAssetId());
+        }
         this.blockchainController.updateDriverAsset(this.driverAsset);
-        System.out.println(driverAsset.toString());
     }
 
     /**

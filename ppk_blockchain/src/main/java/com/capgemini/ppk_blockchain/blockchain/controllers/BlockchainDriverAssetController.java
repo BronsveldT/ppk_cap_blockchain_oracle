@@ -1,6 +1,8 @@
 package com.capgemini.ppk_blockchain.blockchain.controllers;
 
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
@@ -40,7 +42,7 @@ public class BlockchainDriverAssetController {
 
     Gson gson;
     private static final String CHANNEL_NAME = System.getenv().getOrDefault("CHANNEL_NAME", "capgemini");
-    private static final String CHAINCODE_NAME = System.getenv().getOrDefault("CHAINCODE_NAME", "driverAsset");
+    private static final String CHAINCODE_NAME = System.getenv().getOrDefault("CHAINCODE_NAME", "driverassets");
     private static final String MSP_ID = System.getenv().getOrDefault("MSP_ID", "Org1MSP");
 
     // Path to crypto materials.
@@ -80,6 +82,8 @@ public class BlockchainDriverAssetController {
 
         // Get the smart contract from the network.
         contract = network.getContract(CHAINCODE_NAME);
+        System.out.println(contract.getChaincodeName());
+        System.out.println(contract.getContractName());
     }
 
 
@@ -116,19 +120,19 @@ public class BlockchainDriverAssetController {
      * @param driverAssetId
      * @return
      */
-    public boolean checkForDriverAssetExistence(String driverAssetId) {
+    public boolean checkForDriverAssetExistence(String driverAssetId) throws GatewayException {
         String resp = null;
         boolean check = false;
+        var updateDriverAsset = contract.evaluateTransaction("driverAssetExists", driverAssetId);
 
-        byte[] updateDriverAsset = null;
-        try {
-            updateDriverAsset = contract.evaluateTransaction("driverAssetExists", driverAssetId);
-        } catch (GatewayException e) {
-            throw new RuntimeException(e);
+        System.out.println("*** Result:" + prettyJson(updateDriverAsset));
+        resp = prettyJson(updateDriverAsset);
+        if(resp.equalsIgnoreCase("true") || resp.equalsIgnoreCase("false")) {
+            check = Boolean.parseBoolean(resp);
+        } else {
+            System.out.println("Gooi een exception");
         }
-        resp = new String(updateDriverAsset, StandardCharsets.UTF_8);
-        check = Boolean.parseBoolean(resp);
-
+        System.out.println("Check is: " + check);
         return check;
     }
 
@@ -155,14 +159,21 @@ public class BlockchainDriverAssetController {
      * @param driverAsset
      * @return
      */
-    public DriverAsset updateDriverAsset(DriverAsset driverAsset) throws EndorseException, CommitException, SubmitException, CommitStatusException {
+    public DriverAsset updateDriverAsset(DriverAsset driverAsset) throws GatewayException, CommitException {
         String resp = null;
-        if (!this.checkForDriverAssetExistence(driverAsset.getDriverAssetId())) {
-            this.createDriverAsset(driverAsset.getDriverAssetId());
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String drivenKilometersToJsonArray;
+
+        try {
+            drivenKilometersToJsonArray = objectMapper.writeValueAsString(driverAsset.getDrivenKilometersOnRoads());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
+
         byte[] createDriverAssetResult = contract.submitTransaction("updateDriverAsset", //Name of the method on the chaincode.
         driverAsset.getDriverAssetId(), //Identifying info about the driver, in this case we use the licenseplate of the first car send.
-        Arrays.toString(driverAsset.getDrivenKilometersOnRoads())); //Because the chaincode prefers receiving string, we toString the object.
+        drivenKilometersToJsonArray); //Because the chaincode prefers receiving string, we toString the object.
         //We can then deserialize it on the chaincode to perform operations.
         resp = new String(createDriverAssetResult, StandardCharsets.UTF_8);
 
@@ -195,5 +206,14 @@ public class BlockchainDriverAssetController {
 
         return gson.fromJson(resp, new TypeToken<List<DriverAsset>>() {
         }.getType());
+    }
+
+    private String prettyJson(final byte[] json) {
+        return prettyJson(new String(json, StandardCharsets.UTF_8));
+    }
+
+    private String prettyJson(final String json) {
+        var parsedJson = JsonParser.parseString(json);
+        return gson.toJson(parsedJson);
     }
 }

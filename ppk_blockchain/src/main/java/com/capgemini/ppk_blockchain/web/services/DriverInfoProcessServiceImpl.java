@@ -163,8 +163,6 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
             e.printStackTrace();
         } catch (CertificateException e) {
             throw new RuntimeException(e);
-        } catch (InvalidKeyException e) {
-            throw new RuntimeException(e);
         }
         System.out.println("Driver information processed");
         System.out.println(skippedRoads);

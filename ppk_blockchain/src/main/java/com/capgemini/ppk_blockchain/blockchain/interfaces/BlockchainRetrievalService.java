@@ -12,5 +12,5 @@ public interface BlockchainRetrievalService {
     public abstract List<DriverAsset> retrieveDriverAssets();
     public abstract List<Road> retrieveRoads(String roadName);
     public abstract List<Road> retrieveRoadsByMunicipality(String municipality);
-    public abstract boolean checkForDriverAssetExists(String driverId);
+    public abstract boolean checkForDriverAssetExists(String driverId) throws GatewayException;
 }

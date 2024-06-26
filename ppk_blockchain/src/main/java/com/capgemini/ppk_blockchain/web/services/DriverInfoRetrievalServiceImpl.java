@@ -14,7 +14,7 @@ public class DriverInfoRetrievalServiceImpl implements DriverInfoRetrievalServic
 
     BlockchainRetrieveServiceImpl blockchainRetrieveService;
     @Override
-    public Boolean checkForDriverAssetExistence(String id) {
+    public Boolean checkForDriverAssetExistence(String id) throws GatewayException {
         return this.blockchainRetrieveService.checkForDriverAssetExists(id);
     }
 

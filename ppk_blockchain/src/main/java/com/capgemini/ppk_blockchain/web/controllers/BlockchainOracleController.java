@@ -71,7 +71,7 @@ public class BlockchainOracleController {
      *
      */
     @GetMapping("/car/checkForExistence/{carId}")
-    boolean checkForExistenceCar(@PathVariable String carId) {
+    boolean checkForExistenceCar(@PathVariable String carId) throws GatewayException {
         boolean existenceCar = false;
         if (!driverInfoRetrievalService.checkForDriverAssetExistence(carId)) {
             driverInfoProcessService.createCarAsset(carId);
