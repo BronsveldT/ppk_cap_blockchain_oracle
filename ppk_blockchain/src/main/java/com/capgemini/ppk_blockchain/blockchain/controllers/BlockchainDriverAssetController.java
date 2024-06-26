@@ -40,7 +40,7 @@ public class BlockchainDriverAssetController {
 
     Gson gson;
     private static final String CHANNEL_NAME = System.getenv().getOrDefault("CHANNEL_NAME", "capgemini");
-    private static final String CHAINCODE_NAME = System.getenv().getOrDefault("CHAINCODE_NAME", "roadAsset");
+    private static final String CHAINCODE_NAME = System.getenv().getOrDefault("CHAINCODE_NAME", "driverAsset");
     private static final String MSP_ID = System.getenv().getOrDefault("MSP_ID", "Org1MSP");
 
     // Path to crypto materials.

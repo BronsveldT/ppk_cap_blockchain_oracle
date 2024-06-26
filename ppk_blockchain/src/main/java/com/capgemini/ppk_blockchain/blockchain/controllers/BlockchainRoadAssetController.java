@@ -80,6 +80,8 @@ public class BlockchainRoadAssetController {
         // Get the smart contract from the network.
         contract = network.getContract(CHAINCODE_NAME);
         System.out.println(contract.toString());
+        System.out.println(contract.getContractName());
+        System.out.println(contract.getChaincodeName());
     }
 
     private String prettyJson(final byte[] json) {
@@ -102,7 +104,13 @@ public class BlockchainRoadAssetController {
         var updateDriverAsset = contract.evaluateTransaction("roadAssetExists", roadAssetId);
 
         System.out.println("*** Result:" + prettyJson(updateDriverAsset));
-
+        resp = prettyJson(updateDriverAsset);
+        if(resp.equalsIgnoreCase("true") || resp.equalsIgnoreCase("false")) {
+            check = Boolean.parseBoolean(resp);
+        } else {
+            System.out.println("Gooi een exception");
+        }
+        System.out.println("Check is: " + check);
         return check;
     }
 
@@ -138,23 +146,13 @@ public class BlockchainRoadAssetController {
      * @param road
      * @return
      */
-    public Road updateRoadAsset(Road road) {
+    public Road updateRoadAsset(Road road) throws EndorseException, CommitException, SubmitException, CommitStatusException {
         String resp = null;
-        byte[] createDriverAssetResult = null;
-        try {
-            createDriverAssetResult = contract.submitTransaction("updateRoadAsset", road.getRoadId(),
-                    road.getRoadAdminType(),
-                    road.getStreetName(),
-                    String.valueOf(road.getAdminNumber()),
-                    String.valueOf(road.getDistanceTravelledOn()),
-                    road.getAdminName(),
-                    road.getRoadAdminName(),
-                    road.getMunicipality(),
-                    road.getState()
+
+        var createDriverAssetResult = contract.submitTransaction("updateRoadAsset", road.getRoadId(),
+                String.valueOf(road.getDistanceTravelledOn())
             );
-        } catch (EndorseException | CommitException | CommitStatusException | SubmitException e) {
-            throw new RuntimeException(e);
-        }
+
 
         resp = new String(createDriverAssetResult, StandardCharsets.UTF_8);
         return gson.fromJson(resp, Road.class); //Return the stored info of the car.
