@@ -21,6 +21,7 @@ public class RoadAssetClient implements RoadAssetClientInterface {
 
     private final String CHAINCODE_NAME = "basic";
     private Contract contract;
+    private final boolean TRANSACTION_SUCCES = true;
     Gson gson;
     PrettyJsonUtil prettyJsonUtil;
 
@@ -34,11 +35,11 @@ public class RoadAssetClient implements RoadAssetClientInterface {
     }
 
     @Override
-    public Road createRoadAsset(Road road) throws EndorseException, CommitException, SubmitException, CommitStatusException {
+    public boolean createRoadAsset(Road road) throws EndorseException, CommitException, SubmitException, CommitStatusException {
         String resp = null;
 
 
-        var createDriverAssetResult = contract.submitTransaction("createRoadAsset", road.getRoadId(),
+        contract.submitTransaction("createRoadAsset", road.getRoadId(),
                 Objects.requireNonNullElse(road.getRoadAdminType(), "empty"),
                 Objects.requireNonNullElse(road.getStreetName(), "Empty"),
                 Objects.requireNonNullElse(String.valueOf(road.getAdminNumber()), "Empty"),
@@ -48,11 +49,7 @@ public class RoadAssetClient implements RoadAssetClientInterface {
                 Objects.requireNonNullElse(road.getMunicipality(), "Empty"),
                 Objects.requireNonNullElse(road.getState(), "Empty")
         );
-        System.out.println("Transaction committed successfully");
-
-        resp = new String(createDriverAssetResult, StandardCharsets.UTF_8);
-
-        return gson.fromJson(resp, Road.class);
+        return TRANSACTION_SUCCES;
     }
 
     /**
@@ -61,16 +58,13 @@ public class RoadAssetClient implements RoadAssetClientInterface {
      * @param road
      * @return
      */
-    public Road updateRoadAsset(Road road) throws EndorseException, CommitException, SubmitException, CommitStatusException {
-        String resp = null;
+    public boolean updateRoadAsset(Road road) throws EndorseException, CommitException, SubmitException, CommitStatusException {
 
-        var createDriverAssetResult = contract.submitTransaction("updateRoadAsset", road.getRoadId(),
+       contract.submitTransaction("updateRoadAsset", road.getRoadId(),
                 String.valueOf(road.getDistanceTravelledOn())
         );
 
-
-        resp = new String(createDriverAssetResult, StandardCharsets.UTF_8);
-        return gson.fromJson(resp, Road.class); //Return the stored info of the car.
+       return TRANSACTION_SUCCES;
     }
 
     @Override

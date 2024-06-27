@@ -1,4 +1,4 @@
-package com.capgemini.ppk_blockchain.blockchain.serviceinterfaces;
+package com.capgemini.ppk_blockchain.blockchain.blockchainserviceinterfaces;
 
 import org.hyperledger.fabric.client.CommitException;
 import org.hyperledger.fabric.client.GatewayException;

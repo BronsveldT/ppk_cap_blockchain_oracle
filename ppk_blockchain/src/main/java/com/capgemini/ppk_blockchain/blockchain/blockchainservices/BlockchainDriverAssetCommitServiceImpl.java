@@ -1,12 +1,11 @@
-package com.capgemini.ppk_blockchain.blockchain.services;
+package com.capgemini.ppk_blockchain.blockchain.blockchainservices;
 
 import com.capgemini.ppk_blockchain.blockchain.clients.DriverAssetClient;
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
-import com.capgemini.ppk_blockchain.blockchain.serviceinterfaces.BlockchainDriverAssetCommitServiceInterface;
+import com.capgemini.ppk_blockchain.blockchain.blockchainserviceinterfaces.BlockchainDriverAssetCommitServiceInterface;
 import com.capgemini.ppk_blockchain.blockchain.util.CalculateTravelCosts;
 import com.capgemini.ppk_blockchain.web.restmodels.RoadInformation;
-import org.hyperledger.fabric.client.CommitException;
-import org.hyperledger.fabric.client.GatewayException;
+import org.hyperledger.fabric.client.*;
 
 public class BlockchainDriverAssetCommitServiceImpl implements BlockchainDriverAssetCommitServiceInterface {
 
@@ -30,6 +29,11 @@ public class BlockchainDriverAssetCommitServiceImpl implements BlockchainDriverA
     }
 
     @Override
+    public boolean createAsset() throws EndorseException, CommitException, SubmitException, CommitStatusException {
+        return false;
+    }
+
+    @Override
     public boolean deleteAsset(String assetId) {
         return driverAssetClient.deleteDriverAsset(assetId);
     }
@@ -47,8 +51,8 @@ public class BlockchainDriverAssetCommitServiceImpl implements BlockchainDriverA
      * @param emissionType
      */
     public void addCarInfoToDriverAsset(String driverAssetId, String licensePlate, String brand, String emissionType) {
-        this.driverAsset = new DriverAsset(driverAssetId, licensePlate, brand, emissionType);
 
+        this.driverAsset = new DriverAsset(driverAssetId, licensePlate, brand, emissionType);
     }
 
     public void addTravelInformationToDriverAsset(int roadCategory, String streetName, RoadInformation roadInformation) {

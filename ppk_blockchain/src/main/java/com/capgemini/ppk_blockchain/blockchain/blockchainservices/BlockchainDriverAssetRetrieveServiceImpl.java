@@ -1,8 +1,8 @@
-package com.capgemini.ppk_blockchain.blockchain.services;
+package com.capgemini.ppk_blockchain.blockchain.blockchainservices;
 
 import com.capgemini.ppk_blockchain.blockchain.clients.DriverAssetClient;
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
-import com.capgemini.ppk_blockchain.blockchain.serviceinterfaces.BlockchainDriverAssetRetrieveServiceInterface;
+import com.capgemini.ppk_blockchain.blockchain.blockchainserviceinterfaces.BlockchainDriverAssetRetrieveServiceInterface;
 import org.hyperledger.fabric.client.GatewayException;
 
 import java.util.List;
