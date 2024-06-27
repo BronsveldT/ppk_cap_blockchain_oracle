@@ -14,11 +14,13 @@ public class RoadController {
 
     @GetMapping("/road/retrieve/{roadName}")
     List<Road> retrieveRoadAsset(@PathVariable String roadName) {
-        return this.roadAssetRetrievalService.retrieveRoads(roadName);
+        return null;
+//        return this.roadAssetRetrievalService.retrieveRoads(roadName);
     }
 
     @GetMapping("/road/retrieve/{municipality}")
     List<Road> retrieveRoadsByMunicipality(@PathVariable String municipality) {
-        return this.roadAssetRetrievalService.retrieveRoadsByMunicipality(municipality);
+        return null;
+//        return this.roadAssetRetrievalService.retrieveRoadsByMunicipality(municipality);
     }
 }
