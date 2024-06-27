@@ -2,8 +2,10 @@ package com.capgemini.ppk_blockchain.web.controllers;
 
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.web.restmodels.CarInfo;
+import com.capgemini.ppk_blockchain.web.services.DriverInfoProcessServiceImpl;
 import org.hyperledger.fabric.client.CommitException;
 import org.hyperledger.fabric.client.GatewayException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +14,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/driverassets")
 public class DriverAssetController {
+
+    private final DriverInfoProcessServiceImpl driverInfoProcessService;
+
+    @Autowired
+    public DriverAssetController(DriverInfoProcessServiceImpl driverInfoProcessService) {
+        this.driverInfoProcessService = driverInfoProcessService;
+    }
 
 
     /**
@@ -24,7 +33,7 @@ public class DriverAssetController {
      */
     @PostMapping("/process")
     double processRideOfCar(@RequestBody CarInfo carInfo) throws CommitException, GatewayException {
-        System.out.println(carInfo);
+        this.driverInfoProcessService.processDriverInformation(carInfo);
         return 0.0;
         //        return driverInfoProcessService.processDriverInformation(carInfo);
     }
