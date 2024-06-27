@@ -18,6 +18,7 @@ import java.util.List;
 public class DriverAssetClient  implements DriverAssetClientInterface {
 
     private final String CHAINCODE_NAME = "basic";
+    private final boolean TRANSACTION_SUCCES = true;
     private Contract contract;
     Gson gson;
     PrettyJsonUtil prettyJsonUtil;
@@ -31,32 +32,41 @@ public class DriverAssetClient  implements DriverAssetClientInterface {
     }
 
     @Override
-    public DriverAsset createDriverAsset(String driverId) {
-        String resp = null;
-
-        byte[] createDriverAssetResult = null;
+    public boolean createDriverAsset(String driverId) {
         try {
-            createDriverAssetResult = contract.submitTransaction("createDriverAsset", driverId);
+           contract.submitTransaction("createDriverAsset", driverId);
         } catch (EndorseException | CommitException | CommitStatusException | SubmitException e) {
             throw new RuntimeException(e);
         }
-        resp = new String(createDriverAssetResult, StandardCharsets.UTF_8);
-        return gson.fromJson(resp, DriverAsset.class);
+        return TRANSACTION_SUCCES;
     }
 
     @Override
-    public DriverAsset updateDriverAsset(DriverAsset driverAsset) throws GatewayException, CommitException {
-        String resp = null;
-        if (!this.checkForAssetExistence(driverAsset.getDriverAssetId())) {
-            this.createDriverAsset(driverAsset.getDriverAssetId());
-        }
-        byte[] createDriverAssetResult = contract.submitTransaction("updateDriverAsset", //Name of the method on the chaincode.
-                driverAsset.getDriverAssetId(), //Identifying info about the driver, in this case we use the licenseplate of the first car send.
-                Arrays.toString(driverAsset.getDrivenKilometersOnRoads())); //Because the chaincode prefers receiving string, we toString the object.
-        //We can then deserialize it on the chaincode to perform operations.
-        resp = new String(createDriverAssetResult, StandardCharsets.UTF_8);
+    public boolean deleteDriverAsset(String driverId) {
 
-        return gson.fromJson(resp, DriverAsset.class); //Return the stored info of the car.
+        try {
+            contract.submitTransaction("deleteDriverAsset", driverId);
+        } catch (EndorseException | CommitException | CommitStatusException | SubmitException e) {
+            throw new RuntimeException(e);
+        }
+        return TRANSACTION_SUCCES;
+    }
+
+    @Override
+    public boolean updateDriverAsset(DriverAsset driverAsset) throws GatewayException, CommitException {
+
+        System.out.println("Hier gekomen");
+        return TRANSACTION_SUCCES;
+//        String resp = null;
+//        if (!this.checkForAssetExistence(driverAsset.getDriverAssetId())) {
+//            this.createDriverAsset(driverAsset.getDriverAssetId());
+//        }
+//        contract.submitTransaction("updateDriverAsset", //Name of the method on the chaincode.
+//                driverAsset.getDriverAssetId(), //Identifying info about the driver, in this case we use the licenseplate of the first car send.
+//                Arrays.toString(driverAsset.getDrivenKilometersOnRoads())); //Because the chaincode prefers receiving string, we toString the object.
+//        //We can then deserialize it on the chaincode to perform operations.
+//
+//        return TRANSACTION_SUCCES;
     }
 
     @Override

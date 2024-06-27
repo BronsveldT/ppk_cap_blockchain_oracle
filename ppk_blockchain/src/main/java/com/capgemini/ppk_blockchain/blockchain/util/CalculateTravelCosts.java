@@ -2,11 +2,12 @@ package com.capgemini.ppk_blockchain.blockchain.util;
 
 import lombok.ToString;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class CalculateTravelCosts {
 
-    private final int METERS_IN_KILOMETER = 1000;
+    public static final int METERS_IN_KILOMETER = 1000;
     private final double HEFFING_SPITS = 1.5;
     private final double HEFFING_NIET_SPITS = 0.8;
     private final double PRICE_PER_KM = 0.06;
@@ -38,7 +39,7 @@ public class CalculateTravelCosts {
      * @param distanceTravelled
      * @return
      */
-    private double calculateTravelCosts(Integer roadCategory, Integer spits, double distanceTravelled, String emissionType) {
+    public double calculateTravelCosts(Integer roadCategory, Integer spits, double distanceTravelled, String emissionType) {
         /*
         Divide to kilometers.
         Times road category
@@ -46,7 +47,7 @@ public class CalculateTravelCosts {
         Check it is for spits or not.
          */
         double price = distanceTravelled / METERS_IN_KILOMETER * PRICE_PER_KM
-                * MULTIPLICATION_FACTOR_ROADCATEGORIES[roadCategory - 1] * calcMap.get(this.emissionType);
+                * MULTIPLICATION_FACTOR_ROADCATEGORIES[roadCategory - 1] * calcMap.get(emissionType);
 
         if(spits == 0) {
             price *= HEFFING_NIET_SPITS;

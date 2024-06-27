@@ -32,23 +32,4 @@ public class DriverAsset {
 
     }
 
-    /**
-     *
-     * @param roadCategory
-     * @param streetName
-     * @param distanceTravelled
-     * @param spits
-     */
-    public void addTravelledInformation(Integer roadCategory,
-                                        String streetName,
-                                        double distanceTravelled,
-                                        Integer spits){
-        //1. Add the driven meters to the roadcategories array.
-        drivenKilometersOnRoads[roadCategory - 1]  += distanceTravelled / METERS_IN_KILOMETER;
-        //2. Add the costs of the meters to the price.
-        double priceOfDrive = calculateTravelCosts(roadCategory, spits, distanceTravelled);
-        this.rideCosts += priceOfDrive;
-        System.out.println(this.rideCosts);
-        System.out.println(Arrays.toString(this.drivenKilometersOnRoads));
-    }
 }

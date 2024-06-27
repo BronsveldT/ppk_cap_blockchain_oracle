@@ -6,5 +6,4 @@ public interface BlockchainCommitServiceInterface {
 
     public boolean deleteAsset(String assetId);
 
-
 }

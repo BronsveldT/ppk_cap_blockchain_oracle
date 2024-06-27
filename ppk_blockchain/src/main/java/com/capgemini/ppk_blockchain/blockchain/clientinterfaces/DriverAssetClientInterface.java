@@ -12,9 +12,11 @@ public interface DriverAssetClientInterface extends GeneralAssetInterface {
      * @param driverId
      * @return
      */
-    public DriverAsset createDriverAsset(String driverId);
+    public boolean createDriverAsset(String driverId);
 
-    DriverAsset updateDriverAsset(DriverAsset driverAsset) throws GatewayException, CommitException;
+    public boolean deleteDriverAsset(String driverId);
+
+    boolean updateDriverAsset(DriverAsset driverAsset) throws GatewayException, CommitException;
 
     DriverAsset readDriverAsset(String driverAssetId) throws GatewayException;
 
