@@ -1,6 +1,9 @@
 package com.capgemini.ppk_blockchain.web.services;
 
 import com.capgemini.ppk_blockchain.blockchain.interfaceimpl.BlockchainRetrieveServiceImpl;
+
+import com.capgemini.ppk_blockchain.blockchain.controllers.BlockchainRoadAssetController;
+import com.capgemini.ppk_blockchain.blockchain.interfaces.BlockchainRetrievalService;
 import com.capgemini.ppk_blockchain.blockchain.model.Road;
 import com.capgemini.ppk_blockchain.web.interfaces.RoadAssetRetrievalService;
 import org.springframework.stereotype.Service;
