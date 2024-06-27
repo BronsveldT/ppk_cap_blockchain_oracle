@@ -1,4 +1,4 @@
-package com.capgemini.ppk_blockchain.blockchain.interfaces;
+package com.capgemini.ppk_blockchain.blockchain.serviceinterfaces;
 
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.blockchain.model.Road;

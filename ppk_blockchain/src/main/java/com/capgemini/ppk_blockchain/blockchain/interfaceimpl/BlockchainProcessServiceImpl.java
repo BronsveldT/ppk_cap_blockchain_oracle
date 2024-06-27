@@ -1,8 +1,7 @@
 package com.capgemini.ppk_blockchain.blockchain.interfaceimpl;
 
-import com.capgemini.ppk_blockchain.blockchain.controllers.BlockchainDriverAssetController;
 import com.capgemini.ppk_blockchain.blockchain.controllers.BlockchainRoadAssetController;
-import com.capgemini.ppk_blockchain.blockchain.interfaces.BlockchainService;
+import com.capgemini.ppk_blockchain.blockchain.serviceinterfaces.BlockchainService;
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.blockchain.model.Road;
 import com.capgemini.ppk_blockchain.web.restmodels.RoadInformation;

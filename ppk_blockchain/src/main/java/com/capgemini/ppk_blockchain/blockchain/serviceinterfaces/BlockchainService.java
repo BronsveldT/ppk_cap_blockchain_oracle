@@ -1,6 +1,5 @@
-package com.capgemini.ppk_blockchain.blockchain.interfaces;
+package com.capgemini.ppk_blockchain.blockchain.serviceinterfaces;
 
-import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.web.restmodels.RoadInformation;
 import org.hyperledger.fabric.client.*;
 
