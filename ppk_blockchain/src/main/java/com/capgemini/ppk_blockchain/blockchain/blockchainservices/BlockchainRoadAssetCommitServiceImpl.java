@@ -5,9 +5,11 @@ import com.capgemini.ppk_blockchain.blockchain.model.Road;
 import com.capgemini.ppk_blockchain.blockchain.blockchainserviceinterfaces.BlockchainRoadAssetCommitServiceInterface;
 import com.capgemini.ppk_blockchain.blockchain.util.CalculateTravelCosts;
 import org.hyperledger.fabric.client.*;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
+@Service
 public class BlockchainRoadAssetCommitServiceImpl implements BlockchainRoadAssetCommitServiceInterface {
     private Road road;
     private RoadAssetClient roadAssetClient;

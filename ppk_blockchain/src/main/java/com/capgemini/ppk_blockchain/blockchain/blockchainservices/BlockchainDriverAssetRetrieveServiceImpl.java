@@ -5,9 +5,11 @@ import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.blockchain.blockchainserviceinterfaces.BlockchainDriverAssetRetrieveServiceInterface;
 import com.capgemini.ppk_blockchain.blockchain.services.EncryptionService;
 import org.hyperledger.fabric.client.GatewayException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class BlockchainDriverAssetRetrieveServiceImpl implements BlockchainDriverAssetRetrieveServiceInterface {
 
     private DriverAssetClient driverAssetClient;
@@ -31,5 +33,11 @@ public class BlockchainDriverAssetRetrieveServiceImpl implements BlockchainDrive
     @Override
     public List<Object> retrieveAllDriverAssets() throws GatewayException {
         return driverAssetClient.retrieveAllAssets();
+    }
+
+    @Override
+    public boolean checkForDriverAssetExistence(String driverAssetId) throws Exception {
+        String encryptedKey = this.encryptionService.encrypt(driverAssetId);
+        return driverAssetClient.checkForAssetExistence(driverAssetId);
     }
 }

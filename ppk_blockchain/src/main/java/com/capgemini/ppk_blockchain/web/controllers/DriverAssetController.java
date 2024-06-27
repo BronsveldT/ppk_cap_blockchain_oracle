@@ -32,7 +32,7 @@ public class DriverAssetController {
      * @return
      */
     @PostMapping("/process")
-    double processRideOfCar(@RequestBody CarInfo carInfo) throws CommitException, GatewayException {
+    double processRideOfCar(@RequestBody CarInfo carInfo) throws Exception {
         this.driverInfoProcessService.processDriverInformation(carInfo);
         return 0.0;
         //        return driverInfoProcessService.processDriverInformation(carInfo);

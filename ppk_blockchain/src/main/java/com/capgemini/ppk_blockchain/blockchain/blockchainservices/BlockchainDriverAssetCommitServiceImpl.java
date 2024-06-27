@@ -7,12 +7,16 @@ import com.capgemini.ppk_blockchain.blockchain.services.EncryptionService;
 import com.capgemini.ppk_blockchain.blockchain.util.CalculateTravelCosts;
 import com.capgemini.ppk_blockchain.web.restmodels.RoadInformation;
 import org.hyperledger.fabric.client.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class BlockchainDriverAssetCommitServiceImpl implements BlockchainDriverAssetCommitServiceInterface {
 
     DriverAsset driverAsset;
     private DriverAssetClient driverAssetClient;
     private CalculateTravelCosts calculateTravelCosts;
+    @Autowired
     EncryptionService encryptionService;
 
     public BlockchainDriverAssetCommitServiceImpl() {

@@ -10,4 +10,6 @@ public interface BlockchainDriverAssetRetrieveServiceInterface {
     public DriverAsset retrieveDriverAsset(String driverAssetId) throws Exception;
 
     public List<Object> retrieveAllDriverAssets() throws GatewayException;
+
+    public boolean checkForDriverAssetExistence(String driverAssetId) throws Exception;
 }

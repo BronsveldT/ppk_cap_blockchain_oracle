@@ -5,5 +5,5 @@ import org.hyperledger.fabric.client.CommitException;
 import org.hyperledger.fabric.client.GatewayException;
 
 public interface DriverInfoProcessService {
-    public abstract double processDriverInformation(CarInfo carInfo) throws CommitException, GatewayException;
+    public abstract double processDriverInformation(CarInfo carInfo) throws Exception;
 }

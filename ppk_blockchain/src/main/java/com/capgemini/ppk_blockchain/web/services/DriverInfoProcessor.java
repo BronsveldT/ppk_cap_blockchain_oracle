@@ -1,6 +1,8 @@
 package com.capgemini.ppk_blockchain.web.services;
 
 
+import com.capgemini.ppk_blockchain.blockchain.blockchainservices.BlockchainDriverAssetCommitServiceImpl;
+import com.capgemini.ppk_blockchain.blockchain.blockchainservices.BlockchainRoadAssetCommitServiceImpl;
 import com.capgemini.ppk_blockchain.web.db.models.ReverseRoads;
 import com.capgemini.ppk_blockchain.web.db.models.Wegen;
 import com.capgemini.ppk_blockchain.web.repositories.ReverseRoadRepository;
@@ -13,9 +15,6 @@ import org.hyperledger.fabric.client.CommitException;
 import org.hyperledger.fabric.client.GatewayException;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.cert.CertificateException;
 import java.util.HashMap;
 
 @Service
@@ -24,13 +23,17 @@ public class DriverInfoProcessor {
     private final WegenRepository wegenRepository;
     private final ReverseRoadRepository reverseRoadRepository;
     private final ReverseGeocodingService reverseGeocodingService;
+    private final BlockchainDriverAssetCommitServiceImpl blockchainDriverAssetCommitService;
+    private final BlockchainRoadAssetCommitServiceImpl blockchainRoadAssetCommitService;
     private final HashMap<String, Integer> roadsNotInDataset;
 
     public DriverInfoProcessor(WegenRepository wegenRepository, ReverseRoadRepository reverseRoadRepository,
-                               ReverseGeocodingService reverseGeocodingService) {
+                               ReverseGeocodingService reverseGeocodingService, BlockchainDriverAssetCommitServiceImpl blockchainDriverAssetCommitService, BlockchainRoadAssetCommitServiceImpl blockchainRoadAssetCommitService) {
         this.wegenRepository = wegenRepository;
         this.reverseRoadRepository = reverseRoadRepository;
         this.reverseGeocodingService = reverseGeocodingService;
+        this.blockchainDriverAssetCommitService = blockchainDriverAssetCommitService;
+        this.blockchainRoadAssetCommitService = blockchainRoadAssetCommitService;
         this.roadsNotInDataset = initializeRoadsNotInDataset();
     }
 
@@ -70,21 +73,18 @@ public class DriverInfoProcessor {
      *
      * @return The cost of the ride.
      */
-    public double processDriverInformation(CarInfo carInfo) throws CommitException, GatewayException {
+    public double processDriverInformation(CarInfo carInfo) throws Exception {
 
         //As the car information is considered the driver information, we move the data to the DriverAsset DTO in the
         //blockchain package.
 
-
-
-
+        blockchainDriverAssetCommitService.addCarInfoToDriverAsset(carInfo.getKenteken(), carInfo.getKenteken(),
+                carInfo.getMerk(), carInfo.getEmissieType());
+        int skippedRoads = 0;
+        for (RoadInformation roadinformation : carInfo.getRoadInformation()) {
+            processRoadInformation(roadinformation);
+        }
         return 0.0;
-//        blockchainService.addCarInfoToDriverAsset(carInfo.getKenteken(), carInfo.getKenteken(),
-//                carInfo.getMerk(), carInfo.getEmissieType());
-//        int skippedRoads = 0;
-//        for (RoadInformation roadinformation : carInfo.getRoadInformation()) {
-//            processRoadInformation(roadinformation);
-//        }
 //        try {
 //            blockchainService.sendDataToBlockchain();
 //        } catch (IOException | CertificateException | InvalidKeyException e) {
@@ -113,61 +113,67 @@ public class DriverInfoProcessor {
         return 3;
     }
 
-//    private void processRoadInformation(RoadInformation roadinformation) {
-//        ReverseRoads reverseRoads = reverseRoadRepository.findByLatAndLon(roadinformation.getLatitude(), roadinformation.getLongitude());
-//        if (reverseRoads != null) {
-//            addRoadData(reverseRoads, roadinformation);
-//        } else {
-//            OpenstreetMap openstreetMap = reverseGeocodingService.reverseGeoCodingOpenStreetMap(roadinformation.getLatitude(), roadinformation.getLongitude());
-//            processOpenStreetMapData(openstreetMap, roadinformation);
-//        }
-//    }
+    private void processRoadInformation(RoadInformation roadinformation) {
+        ReverseRoads reverseRoads = reverseRoadRepository.findByLatAndLon(roadinformation.getLatitude(), roadinformation.getLongitude());
+        if (reverseRoads != null) {
+            this.blockchainRoadAssetCommitService.addDataToRoad(
+                    reverseRoads.getRoadAdminType(),
+                    reverseRoads.getStreetName(),
+                    reverseRoads.getAdminNumber(),
+                    reverseRoads.getAdminName(),
+                    reverseRoads.getRoadAdminName(),
+                    roadinformation.getDistanceToPrev());
+        } else {
+            OpenstreetMap openstreetMap = reverseGeocodingService.reverseGeoCodingOpenStreetMap(roadinformation.getLatitude(), roadinformation.getLongitude());
+            processOpenStreetMapData(openstreetMap, roadinformation);
+        }
+    }
 //
-//    private void processOpenStreetMapData(OpenstreetMap openstreetMap, RoadInformation roadinformation) {
-//        if (openstreetMap != null) {
-//            Address address = openstreetMap.getAddress();
-//            if (roadsNotInDataset.containsKey(address.getRoad())) {
-//                addRoadData(address, roadinformation);
-//            } else {
-//                Wegen wegen = wegenRepository.findWegenByStreetName(address.getRoad(), address.getTown());
-//                if (wegen != null) {
-//                    addWegenData(wegen, roadinformation);
-//                }
-//            }
-//        }
-//    }
+    private void processOpenStreetMapData(OpenstreetMap openstreetMap, RoadInformation roadinformation) {
+        if (openstreetMap != null) {
+            Address address = openstreetMap.getAddress();
+            if (roadsNotInDataset.containsKey(address.getRoad())) {
+                addRoadData(address, roadinformation);
+            } else {
+                Wegen wegen = wegenRepository.findWegenByStreetName(address.getRoad(), address.getTown());
+                if (wegen != null) {
+                    addWegenData(wegen, roadinformation);
+                }
+            }
+        }
+    }
 //
-//    private void addRoadData(Address address, RoadInformation roadinformation) {
-//        blockchainService.addTravelInformationToDriverAsset(roadsNotInDataset.get(address.getRoad()), address.getRoad(), roadinformation);
-//        blockchainService.addRoadData(
-//                roadsNotInDataset.get(address.getRoad()),
-//                address.getRoad(),
-//                address.getMunicipality(),
-//                address.getState(),
-//                roadinformation.getDistanceToPrev()
-//        );
-//    }
+    private void addRoadData(Address address, RoadInformation roadinformation) {
+        blockchainDriverAssetCommitService.addTravelInformationToDriverAsset(roadsNotInDataset.get(address.getRoad()), address.getRoad(), roadinformation);
+        blockchainRoadAssetCommitService.addDataToRoad(
+                roadsNotInDataset.get(address.getRoad()),
+                address.getRoad(),
+                address.getMunicipality(),
+                address.getState(),
+                roadinformation.getDistanceToPrev()
+        );
+    }
 //
-//    private void addWegenData(Wegen wegen, RoadInformation roadinformation) {
-//        blockchainService.addTravelInformationToDriverAsset(wegen.getRoadCategory(), wegen.getStreetName(), roadinformation);
-//        ReverseRoads reverseRoads = new ReverseRoads(
-//                roadinformation.getLatitude(),
-//                roadinformation.getLongitude(),
-//                wegen.getRoadCategory(),
-//                wegen.getStreetName(),
-//                wegen.getRoadAdminType(),
-//                wegen.getAdminNumber(),
-//                wegen.getAdminName(),
-//                wegen.getAdminName()
-//        );
-//        blockchainService.addRoadData(
-//                reverseRoads.getRoadAdminType(),
-//                reverseRoads.getStreetName(),
-//                reverseRoads.getAdminNumber(),
-//                reverseRoads.getAdminName(),
-//                reverseRoads.getRoadAdminName(),
-//                roadinformation.getDistanceToPrev()
-//        );
-//        reverseRoadRepository.save(reverseRoads);
-//    }
+    private void addWegenData(Wegen wegen, RoadInformation roadinformation) {
+        blockchainDriverAssetCommitService.addTravelInformationToDriverAsset(wegen.getRoadCategory(), wegen.getStreetName(), roadinformation);
+        ReverseRoads reverseRoads = new ReverseRoads(
+                roadinformation.getLatitude(),
+                roadinformation.getLongitude(),
+                wegen.getRoadCategory(),
+                wegen.getStreetName(),
+                wegen.getRoadAdminType(),
+                wegen.getAdminNumber(),
+                wegen.getAdminName(),
+                wegen.getAdminName()
+        );
+        blockchainRoadAssetCommitService.addDataToRoad(
+                reverseRoads.getRoadAdminType(),
+                reverseRoads.getStreetName(),
+                reverseRoads.getAdminNumber(),
+                reverseRoads.getAdminName(),
+                reverseRoads.getRoadAdminName(),
+                roadinformation.getDistanceToPrev()
+        );
+        reverseRoadRepository.save(reverseRoads);
+    }
 }

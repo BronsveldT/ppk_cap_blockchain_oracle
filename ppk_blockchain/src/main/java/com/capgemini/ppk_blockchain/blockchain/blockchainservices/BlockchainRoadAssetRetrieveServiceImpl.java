@@ -4,9 +4,11 @@ import com.capgemini.ppk_blockchain.blockchain.clients.RoadAssetClient;
 import com.capgemini.ppk_blockchain.blockchain.model.Road;
 import com.capgemini.ppk_blockchain.blockchain.blockchainserviceinterfaces.BlockchainRoadAssetRetrieveServiceInterface;
 import org.hyperledger.fabric.client.GatewayException;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class BlockchainRoadAssetRetrieveServiceImpl implements BlockchainRoadAssetRetrieveServiceInterface {
 
     private RoadAssetClient roadAssetClient;

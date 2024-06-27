@@ -16,7 +16,7 @@ public class ReverseGeocodingService {
         this.restTemplate = new RestTemplate();
     }
 
-    private OpenstreetMap reverseGeoCodingOpenStreetMap(double lat, double lon) {
+    public OpenstreetMap reverseGeoCodingOpenStreetMap(double lat, double lon) {
         String url = "https://nominatim.openstreetmap.org/reverse?lat=" + lat + "&lon=" + lon
                 + "&format=json&addressdetails=1&zoom=17";
         ResponseEntity<OpenstreetMap> resp = restTemplate.getForEntity(url, OpenstreetMap.class);
