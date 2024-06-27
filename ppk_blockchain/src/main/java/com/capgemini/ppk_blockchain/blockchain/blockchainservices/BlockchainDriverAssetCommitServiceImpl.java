@@ -3,6 +3,7 @@ package com.capgemini.ppk_blockchain.blockchain.blockchainservices;
 import com.capgemini.ppk_blockchain.blockchain.clients.DriverAssetClient;
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.blockchain.blockchainserviceinterfaces.BlockchainDriverAssetCommitServiceInterface;
+import com.capgemini.ppk_blockchain.blockchain.services.EncryptionService;
 import com.capgemini.ppk_blockchain.blockchain.util.CalculateTravelCosts;
 import com.capgemini.ppk_blockchain.web.restmodels.RoadInformation;
 import org.hyperledger.fabric.client.*;
@@ -12,6 +13,7 @@ public class BlockchainDriverAssetCommitServiceImpl implements BlockchainDriverA
     DriverAsset driverAsset;
     private DriverAssetClient driverAssetClient;
     private CalculateTravelCosts calculateTravelCosts;
+    EncryptionService encryptionService;
 
     public BlockchainDriverAssetCommitServiceImpl() {
         try {
@@ -24,8 +26,9 @@ public class BlockchainDriverAssetCommitServiceImpl implements BlockchainDriverA
     }
 
     @Override
-    public boolean createAsset(String assetId) {
-        return driverAssetClient.createDriverAsset(assetId);
+    public boolean createAsset(String assetId) throws Exception {
+        String encryptedKey = this.encryptionService.encrypt(assetId);
+        return driverAssetClient.createDriverAsset(encryptedKey);
     }
 
     @Override
@@ -34,8 +37,9 @@ public class BlockchainDriverAssetCommitServiceImpl implements BlockchainDriverA
     }
 
     @Override
-    public boolean deleteAsset(String assetId) {
-        return driverAssetClient.deleteDriverAsset(assetId);
+    public boolean deleteAsset(String assetId) throws Exception {
+        String encryptedKey = this.encryptionService.encrypt(assetId);
+        return driverAssetClient.deleteDriverAsset(encryptedKey);
     }
 
     @Override
@@ -50,9 +54,9 @@ public class BlockchainDriverAssetCommitServiceImpl implements BlockchainDriverA
      * @param brand
      * @param emissionType
      */
-    public void addCarInfoToDriverAsset(String driverAssetId, String licensePlate, String brand, String emissionType) {
-
-        this.driverAsset = new DriverAsset(driverAssetId, licensePlate, brand, emissionType);
+    public void addCarInfoToDriverAsset(String driverAssetId, String licensePlate, String brand, String emissionType) throws Exception {
+        String encryptedKey = this.encryptionService.encrypt(driverAssetId);
+        this.driverAsset = new DriverAsset(encryptedKey, licensePlate, brand, emissionType);
     }
 
     public void addTravelInformationToDriverAsset(int roadCategory, String streetName, RoadInformation roadInformation) {

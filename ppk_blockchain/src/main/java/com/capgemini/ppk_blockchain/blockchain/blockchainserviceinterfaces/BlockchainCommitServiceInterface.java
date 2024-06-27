@@ -7,9 +7,9 @@ import org.hyperledger.fabric.client.SubmitException;
 
 public interface BlockchainCommitServiceInterface {
 
-    public boolean createAsset(String assetId);
+    public boolean createAsset(String assetId) throws Exception;
 
     public boolean createAsset() throws EndorseException, CommitException, SubmitException, CommitStatusException;
-    public boolean deleteAsset(String assetId);
+    public boolean deleteAsset(String assetId) throws Exception;
 
 }
