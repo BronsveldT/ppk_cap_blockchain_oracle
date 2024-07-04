@@ -14,5 +14,7 @@ public interface RoadAssetClientInterface extends GeneralAssetInterface {
     List<Road> readRoadAssetByName(String roadName);
 
     List<Road> retrieveRoadsByMunicipality(String municipality);
+    List<Road> retrieveAllAssets() throws GatewayException;
+
 
 }

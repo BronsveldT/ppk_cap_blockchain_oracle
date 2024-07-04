@@ -15,7 +15,7 @@ public class BlockchainDriverAssetCommitServiceImpl implements BlockchainDriverA
 
     DriverAsset driverAsset;
     private DriverAssetClient driverAssetClient;
-    private CalculateTravelCosts calculateTravelCosts;
+    private final CalculateTravelCosts calculateTravelCosts;
     @Autowired
     EncryptionService encryptionService;
 
@@ -32,7 +32,9 @@ public class BlockchainDriverAssetCommitServiceImpl implements BlockchainDriverA
     @Override
     public boolean createAsset(String assetId) throws Exception {
         String encryptedKey = this.encryptionService.encrypt(assetId);
-        return driverAssetClient.createDriverAsset(encryptedKey);
+        this.driverAsset.setDriverAssetId(encryptedKey);
+        this.driverAsset.setLicensePlate(encryptedKey);
+        return driverAssetClient.createDriverAsset(this.driverAsset.getDriverAssetId(), this.driverAsset.getLicensePlate(), this.driverAsset.getEmissionType(), this.driverAsset.getBrand());
     }
 
     @Override
@@ -60,15 +62,21 @@ public class BlockchainDriverAssetCommitServiceImpl implements BlockchainDriverA
      */
     public void addCarInfoToDriverAsset(String driverAssetId, String licensePlate, String brand, String emissionType) throws Exception {
         String encryptedKey = this.encryptionService.encrypt(driverAssetId);
-        this.driverAsset = new DriverAsset(encryptedKey, licensePlate, brand, emissionType);
+        this.driverAsset = new DriverAsset(encryptedKey, encryptedKey, brand, emissionType);
+        System.out.println("Encrypted key: " + this.driverAsset.getDriverAssetId());
+        System.out.println(this.driverAsset);
     }
 
     public void addTravelInformationToDriverAsset(int roadCategory, String streetName, RoadInformation roadInformation) {
-        this.driverAsset.getDrivenKilometersOnRoads()[roadCategory -1] += roadInformation.getDistanceToPrev() / CalculateTravelCosts.METERS_IN_KILOMETER;
+        this.driverAsset.getDrivenKilometersOnRoad()[roadCategory -1] += roadInformation.getDistanceToPrev() / CalculateTravelCosts.METERS_IN_KILOMETER;
         double rideCosts = this.driverAsset.getRideCosts();
         rideCosts += this.calculateTravelCosts.calculateTravelCosts(roadCategory, roadInformation.getSpits(),
                 roadInformation.getDistanceToPrev(), this.driverAsset.getEmissionType());
 
         this.driverAsset.setRideCosts(rideCosts);
+    }
+
+    public double retrieveRideCosts() {
+        return this.driverAsset.getRideCosts();
     }
 }

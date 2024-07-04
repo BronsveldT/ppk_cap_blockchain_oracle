@@ -28,7 +28,7 @@ public class DriverInfoProcessor {
     private final HashMap<String, Integer> roadsNotInDataset;
 
     public DriverInfoProcessor(WegenRepository wegenRepository, ReverseRoadRepository reverseRoadRepository,
-                               ReverseGeocodingService reverseGeocodingService, BlockchainDriverAssetCommitServiceImpl blockchainDriverAssetCommitService, BlockchainRoadAssetCommitServiceImpl blockchainRoadAssetCommitService) {
+                               ReverseGeocodingService reverseGeocodingService, BlockchainDriverAssetCommitServiceImpl blockchainDriverAssetCommitService, BlockchainRoadAssetCommitServiceImpl blockchainRoadAssetCommitService, BlockchainDriverAssetCommitServiceImpl blockchainDriverAssetCommitServiceImpl) {
         this.wegenRepository = wegenRepository;
         this.reverseRoadRepository = reverseRoadRepository;
         this.reverseGeocodingService = reverseGeocodingService;
@@ -84,13 +84,8 @@ public class DriverInfoProcessor {
         for (RoadInformation roadinformation : carInfo.getRoadInformation()) {
             processRoadInformation(roadinformation);
         }
-        return 0.0;
-//        try {
-//            blockchainService.sendDataToBlockchain();
-//        } catch (IOException | CertificateException | InvalidKeyException e) {
-//            throw new RuntimeException(e);
-//        }
-//        return blockchainService.retrieveRideCosts();
+        this.blockchainDriverAssetCommitService.updateDriverAsset();
+        return this.blockchainDriverAssetCommitService.retrieveRideCosts();
     }
 
     private int determineRoadCategory(String roadName) {

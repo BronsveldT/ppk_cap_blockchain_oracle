@@ -3,12 +3,14 @@ package com.capgemini.ppk_blockchain.web.controllers;
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.web.restmodels.CarInfo;
 import com.capgemini.ppk_blockchain.web.services.DriverInfoProcessServiceImpl;
+import com.capgemini.ppk_blockchain.web.services.DriverInfoRetrievalServiceImpl;
 import org.hyperledger.fabric.client.CommitException;
 import org.hyperledger.fabric.client.GatewayException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Driver;
 import java.util.List;
 
 @RestController
@@ -16,10 +18,13 @@ import java.util.List;
 public class DriverAssetController {
 
     private final DriverInfoProcessServiceImpl driverInfoProcessService;
+    private final DriverInfoRetrievalServiceImpl driverInfoRetrievalService;
 
     @Autowired
-    public DriverAssetController(DriverInfoProcessServiceImpl driverInfoProcessService) {
+    public DriverAssetController(DriverInfoProcessServiceImpl driverInfoProcessService, DriverInfoRetrievalServiceImpl driverInfoRetrievalService) {
         this.driverInfoProcessService = driverInfoProcessService;
+
+        this.driverInfoRetrievalService = driverInfoRetrievalService;
     }
 
 
@@ -33,9 +38,7 @@ public class DriverAssetController {
      */
     @PostMapping("/process")
     double processRideOfCar(@RequestBody CarInfo carInfo) throws Exception {
-        this.driverInfoProcessService.processDriverInformation(carInfo);
-        return 0.0;
-        //        return driverInfoProcessService.processDriverInformation(carInfo);
+        return this.driverInfoProcessService.processDriverInformation(carInfo);
     }
 
     /**
@@ -59,14 +62,9 @@ public class DriverAssetController {
      * @return false/true depending on the existence of the Asset.
      */
     @GetMapping("/checkForExistence/{driverAssetId}")
-    boolean checkForExistenceCar(@PathVariable String carId) {
-        System.out.println(carId);
-        boolean existenceCar = false;
-        //        if (!driverInfoRetrievalService.checkForDriverAssetExistence(carId)) {
-        //            driverInfoProcessService.createCarAsset(carId);
-        //            existenceCar = true;
-        //        }
-        return existenceCar;
+    boolean checkForExistenceCar(@PathVariable String driverAssetId) throws Exception {
+        System.out.println(driverAssetId);
+        return driverInfoRetrievalService.checkForDriverAssetExistence(driverAssetId);
     }
 
     /**
@@ -77,15 +75,23 @@ public class DriverAssetController {
      * @return
      */
     @GetMapping("/retrieve/{id}")
-    DriverAsset retrieveCarInfo(@PathVariable String id) throws GatewayException {
-//        if(driverInfoRetrievalService.checkForDriverAssetExistence(id)) {
-//            return driverInfoRetrievalService.retrieveDriverAsset(id);
-//        }
+    DriverAsset retrieveCarInfo(@PathVariable String id) throws Exception {
+        if(driverInfoRetrievalService.checkForDriverAssetExistence(id)) {
+            return driverInfoRetrievalService.retrieveDriverAsset(id);
+        }
         return null;
     }
 
-    @GetMapping("/{id}/getHistory")
-    CarInfo getHistoryForCar(@PathVariable String id) {
+    @GetMapping("retrieve/{id}/getHistory")
+    DriverAsset getHistoryForCar(@PathVariable String id) {
+
+        try {
+            if(driverInfoRetrievalService.checkForDriverAssetExistence(id)) {
+                driverInfoRetrievalService.getHistoryForDriverAsset(id);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
@@ -93,7 +99,8 @@ public class DriverAssetController {
      * @return
      */
     @GetMapping("/all")
-    public ResponseEntity<List<DriverAsset>> getAllDriverAssets() {
-        return null;
+    public List<DriverAsset> getAllDriverAssets() throws GatewayException {
+
+        return driverInfoRetrievalService.retrieveAllDriverAssets();
     }
 }

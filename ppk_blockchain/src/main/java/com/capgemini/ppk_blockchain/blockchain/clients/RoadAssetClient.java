@@ -133,7 +133,7 @@ public class RoadAssetClient implements RoadAssetClientInterface {
     }
 
     @Override
-    public List<Object> retrieveAllAssets() throws GatewayException {
+    public List<Road> retrieveAllAssets() throws GatewayException {
         String resp = null;
 
         byte[] updateDriverAsset = contract.evaluateTransaction("getAll");

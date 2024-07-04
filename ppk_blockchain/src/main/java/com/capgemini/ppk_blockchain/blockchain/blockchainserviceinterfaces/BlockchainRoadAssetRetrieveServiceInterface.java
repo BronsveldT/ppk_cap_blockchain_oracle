@@ -11,7 +11,7 @@ public interface BlockchainRoadAssetRetrieveServiceInterface {
 
     public List<Road> retrieveRoadsByMunicipality(String municipality);
 
-    public List<Object> retrieveAllAssets() throws GatewayException;
+    public List<Road> retrieveAllAssets() throws GatewayException;
 
 
 }

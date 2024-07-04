@@ -5,6 +5,7 @@ import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.blockchain.blockchainserviceinterfaces.BlockchainDriverAssetRetrieveServiceInterface;
 import com.capgemini.ppk_blockchain.blockchain.services.EncryptionService;
 import org.hyperledger.fabric.client.GatewayException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +14,8 @@ import java.util.List;
 public class BlockchainDriverAssetRetrieveServiceImpl implements BlockchainDriverAssetRetrieveServiceInterface {
 
     private DriverAssetClient driverAssetClient;
-    private EncryptionService encryptionService;
-    public BlockchainDriverAssetRetrieveServiceImpl() {
+    private final EncryptionService encryptionService;
+    public BlockchainDriverAssetRetrieveServiceImpl(EncryptionService encryptionService) {
 
         try {
             driverAssetClient = new DriverAssetClient();
@@ -22,22 +23,31 @@ public class BlockchainDriverAssetRetrieveServiceImpl implements BlockchainDrive
             e.printStackTrace();
         }
 
+        this.encryptionService = encryptionService;
     }
 
     @Override
     public DriverAsset retrieveDriverAsset(String driverAssetId) throws Exception {
         String encryptedKey = this.encryptionService.encrypt(driverAssetId);
-        return driverAssetClient.readDriverAsset(encryptedKey);
+        DriverAsset driverasset = driverAssetClient.readDriverAsset(encryptedKey);
+        driverasset.setDriverAssetId(this.encryptionService.decrypt(driverasset.getDriverAssetId()));
+        driverasset.setLicensePlate(this.encryptionService.decrypt(driverasset.getLicensePlate()));
+        return driverasset;
     }
 
     @Override
-    public List<Object> retrieveAllDriverAssets() throws GatewayException {
+    public List<DriverAsset> retrieveAllDriverAssets() throws GatewayException {
         return driverAssetClient.retrieveAllAssets();
     }
 
     @Override
     public boolean checkForDriverAssetExistence(String driverAssetId) throws Exception {
         String encryptedKey = this.encryptionService.encrypt(driverAssetId);
-        return driverAssetClient.checkForAssetExistence(driverAssetId);
+        return driverAssetClient.checkForAssetExistence(encryptedKey);
+    }
+
+    @Override
+    public List<DriverAsset> getHistoryForDriverAsset(String driverAssetId) throws Exception {
+        return this.driverAssetClient.getHistoryForDriverAsset(this.encryptionService.encrypt(driverAssetId));
     }
 }

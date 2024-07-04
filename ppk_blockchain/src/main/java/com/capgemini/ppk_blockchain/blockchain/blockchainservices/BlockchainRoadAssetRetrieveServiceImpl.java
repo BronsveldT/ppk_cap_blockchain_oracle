@@ -33,7 +33,7 @@ public class BlockchainRoadAssetRetrieveServiceImpl implements BlockchainRoadAss
     }
 
     @Override
-    public List<Object> retrieveAllAssets() throws GatewayException {
+    public List<Road> retrieveAllAssets() throws GatewayException {
         return this.roadAssetClient.retrieveAllAssets();
     }
 }

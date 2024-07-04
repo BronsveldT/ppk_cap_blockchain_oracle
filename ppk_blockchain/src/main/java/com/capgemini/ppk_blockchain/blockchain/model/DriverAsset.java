@@ -16,7 +16,7 @@ public class DriverAsset {
     private String licensePlate;
     private String brand;
     private String emissionType;
-    private double[] drivenKilometersOnRoads = new double[5];
+    private double[] drivenKilometersOnRoad = new double[5];
 
     private double rideCosts = 0.0;
 
@@ -32,4 +32,18 @@ public class DriverAsset {
 
     }
 
+    public DriverAsset(String driverAssetId, double rideCosts, double[] drivenKilometersOnRoad) {
+        this.driverAssetId = driverAssetId;
+        this.rideCosts = rideCosts;
+        this.drivenKilometersOnRoad = drivenKilometersOnRoad;
+    }
+
+    public DriverAsset(String driverAssetId, String licensePlate, String brand, String emissionType, double[] drivenKilometersOnRoad, double rideCosts) {
+        this.driverAssetId = driverAssetId;
+        this.licensePlate = licensePlate;
+        this.brand = brand;
+        this.emissionType = emissionType;
+        this.drivenKilometersOnRoad = drivenKilometersOnRoad;
+        this.rideCosts = rideCosts;
+    }
 }

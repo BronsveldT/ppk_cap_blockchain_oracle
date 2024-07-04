@@ -40,7 +40,11 @@
 			<artifactId>everit-json-schema</artifactId>
 			<version>1.14.2</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.owlike</groupId>
+			<artifactId>genson</artifactId>
+			<version>1.6</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

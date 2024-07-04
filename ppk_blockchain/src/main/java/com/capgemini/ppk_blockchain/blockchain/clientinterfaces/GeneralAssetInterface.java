@@ -9,6 +9,5 @@ public interface GeneralAssetInterface {
 
     boolean checkForAssetExistence(String assetId) throws GatewayException;
 
-    List<Object> retrieveAllAssets() throws GatewayException;
 
 }
