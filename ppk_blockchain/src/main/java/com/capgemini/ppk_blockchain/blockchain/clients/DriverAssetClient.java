@@ -62,12 +62,14 @@ public class DriverAssetClient  implements DriverAssetClientInterface {
     public boolean updateDriverAsset(DriverAsset driverAsset) throws GatewayException, CommitException {
 
         System.out.println("Hier gekomen");
+        System.out.println(driverAsset);
         if (!this.checkForAssetExistence(driverAsset.getDriverAssetId())) {
             this.createDriverAsset(driverAsset.getDriverAssetId(), driverAsset.getLicensePlate(), driverAsset.getEmissionType(), driverAsset.getBrand());
         }
         contract.submitTransaction("updateDriverAsset", //Name of the method on the chaincode.
                 driverAsset.getDriverAssetId(), //Identifying info about the driver, in this case we use the licenseplate of the first car send.
-                Arrays.toString(driverAsset.getDrivenKilometersOnRoad())); //Because the chaincode prefers receiving string, we toString the object.
+                Arrays.toString(driverAsset.getDrivenKilometersOnRoad()),
+                String.valueOf(driverAsset.getRideCosts())); //Because the chaincode prefers receiving string, we toString the object.
         //We can then deserialize it on the chaincode to perform operations.
 
         return TRANSACTION_SUCCES;
@@ -120,6 +122,6 @@ public class DriverAssetClient  implements DriverAssetClientInterface {
         resp = new String(updateDriverAsset, StandardCharsets.UTF_8);
         System.out.println(resp);
 
-        return List.of();
+        return genson.deserialize(resp, new GenericType<List<DriverAsset>>() {});
     }
 }

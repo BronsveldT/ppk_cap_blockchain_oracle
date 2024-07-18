@@ -48,6 +48,18 @@ public class BlockchainDriverAssetRetrieveServiceImpl implements BlockchainDrive
 
     @Override
     public List<DriverAsset> getHistoryForDriverAsset(String driverAssetId) throws Exception {
-        return this.driverAssetClient.getHistoryForDriverAsset(this.encryptionService.encrypt(driverAssetId));
+        List<DriverAsset> driverAssetList = this.driverAssetClient.
+                getHistoryForDriverAsset(this.encryptionService.encrypt(driverAssetId));
+
+        driverAssetList = driverAssetList.stream().peek(obj -> {
+            try {
+                obj.setDriverAssetId(this.encryptionService.decrypt(obj.getDriverAssetId()));
+                obj.setLicensePlate(this.encryptionService.decrypt(obj.getLicensePlate()));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).toList();
+
+        return driverAssetList;
     }
 }

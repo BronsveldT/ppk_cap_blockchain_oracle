@@ -2,6 +2,7 @@ package com.capgemini.ppk_blockchain.web.controllers;
 
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.web.restmodels.CarInfo;
+import com.capgemini.ppk_blockchain.web.restmodels.RoadTripInformation;
 import com.capgemini.ppk_blockchain.web.services.DriverInfoProcessServiceImpl;
 import com.capgemini.ppk_blockchain.web.services.DriverInfoRetrievalServiceImpl;
 import org.hyperledger.fabric.client.CommitException;
@@ -37,7 +38,8 @@ public class DriverAssetController {
      * @return
      */
     @PostMapping("/process")
-    double processRideOfCar(@RequestBody CarInfo carInfo) throws Exception {
+    RoadTripInformation processRideOfCar(@RequestBody CarInfo carInfo) throws Exception {
+        System.out.println(carInfo.toString());
         return this.driverInfoProcessService.processDriverInformation(carInfo);
     }
 
@@ -83,11 +85,11 @@ public class DriverAssetController {
     }
 
     @GetMapping("retrieve/{id}/getHistory")
-    DriverAsset getHistoryForCar(@PathVariable String id) {
+    List<DriverAsset> getHistoryForCar(@PathVariable String id) {
 
         try {
             if(driverInfoRetrievalService.checkForDriverAssetExistence(id)) {
-                driverInfoRetrievalService.getHistoryForDriverAsset(id);
+                return driverInfoRetrievalService.getHistoryForDriverAsset(id);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

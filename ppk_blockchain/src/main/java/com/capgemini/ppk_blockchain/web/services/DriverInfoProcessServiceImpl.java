@@ -7,6 +7,7 @@ import com.capgemini.ppk_blockchain.web.interfaces.DriverInfoProcessService;
 import com.capgemini.ppk_blockchain.web.repositories.ReverseRoadRepository;
 import com.capgemini.ppk_blockchain.web.repositories.WegenRepository;
 import com.capgemini.ppk_blockchain.web.restmodels.CarInfo;
+import com.capgemini.ppk_blockchain.web.restmodels.RoadTripInformation;
 import org.hyperledger.fabric.client.CommitException;
 import org.hyperledger.fabric.client.GatewayException;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class DriverInfoProcessServiceImpl implements DriverInfoProcessService {
     }
 
     @Override
-    public double processDriverInformation(CarInfo carInfo) throws Exception {
+    public RoadTripInformation processDriverInformation(CarInfo carInfo) throws Exception {
         return driverInfoProcessor.processDriverInformation(carInfo);
     }
 }

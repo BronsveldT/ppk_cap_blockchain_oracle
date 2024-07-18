@@ -12,6 +12,10 @@ public class RoadAssetRetrievalServiceImpl implements RoadAssetRetrievalService 
 
     BlockchainRoadAssetRetrieveServiceImpl blockchainRoadAssetRetrieveService;
 
+    public RoadAssetRetrievalServiceImpl(BlockchainRoadAssetRetrieveServiceImpl blockchainRoadAssetRetrieveService) {
+        this.blockchainRoadAssetRetrieveService = blockchainRoadAssetRetrieveService;
+    }
+
     @Override
     public List<Road> retrieveRoads(String roadName) {
         return this.blockchainRoadAssetRetrieveService.readRoadAssetByName(roadName);
@@ -20,5 +24,15 @@ public class RoadAssetRetrievalServiceImpl implements RoadAssetRetrievalService 
     @Override
     public List<Road> retrieveRoadsByMunicipality(String municipalityName) {
         return this.blockchainRoadAssetRetrieveService.retrieveRoadsByMunicipality(municipalityName);
+    }
+
+    @Override
+    public List<Road> retrieveRoadsByAdminType(String adminType) {
+        return this.blockchainRoadAssetRetrieveService.retrieveRoadsByAdminType(adminType);
+    }
+
+    @Override
+    public List<Road> retrieveRoadsByState(String state) {
+        return this.blockchainRoadAssetRetrieveService.retrieveRoadsByState(state);
     }
 }

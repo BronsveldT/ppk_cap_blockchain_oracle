@@ -1,6 +1,7 @@
 package com.capgemini.ppk_blockchain.web.controllers;
 
 import com.capgemini.ppk_blockchain.blockchain.model.Road;
+import com.capgemini.ppk_blockchain.web.services.RoadAssetRetrievalServiceImpl;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,15 +13,29 @@ import java.util.List;
 @RequestMapping("/roads")
 public class RoadController {
 
-    @GetMapping("/road/retrieve/{roadName}")
-    List<Road> retrieveRoadAsset(@PathVariable String roadName) {
-        return null;
-//        return this.roadAssetRetrievalService.retrieveRoads(roadName);
+    private final RoadAssetRetrievalServiceImpl roadAssetRetrievalService;
+
+    public RoadController(RoadAssetRetrievalServiceImpl roadAssetRetrievalService) {
+        this.roadAssetRetrievalService = roadAssetRetrievalService;
     }
 
-    @GetMapping("/road/retrieve/{municipality}")
+    @GetMapping("/retrieve/road/{roadName}")
+    List<Road> retrieveRoadAsset(@PathVariable String roadName) {
+        return this.roadAssetRetrievalService.retrieveRoads(roadName);
+    }
+
+    @GetMapping("/retrieve/municipality/{municipality}")
     List<Road> retrieveRoadsByMunicipality(@PathVariable String municipality) {
-        return null;
-//        return this.roadAssetRetrievalService.retrieveRoadsByMunicipality(municipality);
+        return this.roadAssetRetrievalService.retrieveRoadsByMunicipality(municipality);
+    }
+
+    @GetMapping("/retrieve/adminType/{adminType}")
+    List<Road> retrieveRoadsByAdminType(@PathVariable String adminType) {
+        return this.roadAssetRetrievalService.retrieveRoadsByAdminType(adminType);
+    }
+
+    @GetMapping("/retrieve/state/{state}")
+    List<Road> retrieveRoadsByState(@PathVariable String state) {
+        return this.roadAssetRetrievalService.retrieveRoadsByState(state);
     }
 }

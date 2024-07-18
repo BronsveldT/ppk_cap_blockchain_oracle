@@ -33,6 +33,16 @@ public class BlockchainRoadAssetRetrieveServiceImpl implements BlockchainRoadAss
     }
 
     @Override
+    public List<Road> retrieveRoadsByAdminType(String adminType) {
+        return this.roadAssetClient.retrieveRoadAssetsByAdminType(adminType);
+    }
+
+    @Override
+    public List<Road> retrieveRoadsByState(String state) {
+        return this.roadAssetClient.retrieveRoadsByState(state);
+    }
+
+    @Override
     public List<Road> retrieveAllAssets() throws GatewayException {
         return this.roadAssetClient.retrieveAllAssets();
     }
