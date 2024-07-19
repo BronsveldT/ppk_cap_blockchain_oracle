@@ -44,7 +44,7 @@ public class CalculateTravelCosts {
         Divide to kilometers.
         Times road category
         Times value for emissie_code. Emissie=emission.
-        Check it is for spits or not.
+        Check if it is for spits or not.
          */
         double price = distanceTravelled / METERS_IN_KILOMETER * PRICE_PER_KM
                 * MULTIPLICATION_FACTOR_ROADCATEGORIES[roadCategory - 1] * calcMap.get(emissionType);

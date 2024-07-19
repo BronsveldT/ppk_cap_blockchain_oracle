@@ -19,7 +19,7 @@ public class DriverAsset {
     private double[] drivenKilometersOnRoad = new double[5];
 
     private double rideCosts = 0.0;
-
+    private Long timestampDriverAsset;
     public DriverAsset() {
     }
 
@@ -38,12 +38,14 @@ public class DriverAsset {
         this.drivenKilometersOnRoad = drivenKilometersOnRoad;
     }
 
-    public DriverAsset(String driverAssetId, String licensePlate, String brand, String emissionType, double[] drivenKilometersOnRoad, double rideCosts) {
+    public DriverAsset(String driverAssetId, String licensePlate, String brand, String emissionType, double[] drivenKilometersOnRoad, double rideCosts,
+                       long timestampDriverAsset) {
         this.driverAssetId = driverAssetId;
         this.licensePlate = licensePlate;
         this.brand = brand;
         this.emissionType = emissionType;
         this.drivenKilometersOnRoad = drivenKilometersOnRoad;
         this.rideCosts = rideCosts;
+        this.timestampDriverAsset = timestampDriverAsset;
     }
 }

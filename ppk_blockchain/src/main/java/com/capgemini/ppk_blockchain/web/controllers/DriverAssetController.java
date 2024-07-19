@@ -39,8 +39,11 @@ public class DriverAssetController {
      */
     @PostMapping("/process")
     RoadTripInformation processRideOfCar(@RequestBody CarInfo carInfo) throws Exception {
-        System.out.println(carInfo.toString());
-        return this.driverInfoProcessService.processDriverInformation(carInfo);
+        Long startTime = System.currentTimeMillis();
+        RoadTripInformation roadTripInformation = this.driverInfoProcessService.processDriverInformation(carInfo);
+        Long endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime) / 1000);
+        return roadTripInformation;
     }
 
     /**

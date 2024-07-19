@@ -3,6 +3,7 @@ package com.capgemini.ppk_blockchain.blockchain.blockchainservices;
 import com.capgemini.ppk_blockchain.blockchain.clients.DriverAssetClient;
 import com.capgemini.ppk_blockchain.blockchain.model.DriverAsset;
 import com.capgemini.ppk_blockchain.blockchain.blockchainserviceinterfaces.BlockchainDriverAssetRetrieveServiceInterface;
+import com.capgemini.ppk_blockchain.blockchain.processors.DriverAssetProcessor;
 import com.capgemini.ppk_blockchain.blockchain.services.EncryptionService;
 import org.hyperledger.fabric.client.GatewayException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,18 +49,7 @@ public class BlockchainDriverAssetRetrieveServiceImpl implements BlockchainDrive
 
     @Override
     public List<DriverAsset> getHistoryForDriverAsset(String driverAssetId) throws Exception {
-        List<DriverAsset> driverAssetList = this.driverAssetClient.
-                getHistoryForDriverAsset(this.encryptionService.encrypt(driverAssetId));
-
-        driverAssetList = driverAssetList.stream().peek(obj -> {
-            try {
-                obj.setDriverAssetId(this.encryptionService.decrypt(obj.getDriverAssetId()));
-                obj.setLicensePlate(this.encryptionService.decrypt(obj.getLicensePlate()));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }).toList();
-
-        return driverAssetList;
+        DriverAssetProcessor driverAssetProcessor = new DriverAssetProcessor(this.encryptionService, this.driverAssetClient);
+        return driverAssetProcessor.retrieveHistory(driverAssetId);
     }
 }

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.cert.CertificateException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
@@ -69,7 +70,8 @@ public class DriverAssetClient  implements DriverAssetClientInterface {
         contract.submitTransaction("updateDriverAsset", //Name of the method on the chaincode.
                 driverAsset.getDriverAssetId(), //Identifying info about the driver, in this case we use the licenseplate of the first car send.
                 Arrays.toString(driverAsset.getDrivenKilometersOnRoad()),
-                String.valueOf(driverAsset.getRideCosts())); //Because the chaincode prefers receiving string, we toString the object.
+                String.valueOf(driverAsset.getRideCosts()),
+                String.valueOf(Instant.now().toEpochMilli())); //Because the chaincode prefers receiving string, we toString the object.
         //We can then deserialize it on the chaincode to perform operations.
 
         return TRANSACTION_SUCCES;
