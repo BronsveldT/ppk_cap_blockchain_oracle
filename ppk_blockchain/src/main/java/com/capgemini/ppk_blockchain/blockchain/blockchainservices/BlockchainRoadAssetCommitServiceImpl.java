@@ -107,12 +107,13 @@ public class BlockchainRoadAssetCommitServiceImpl implements BlockchainRoadAsset
 
     @Override
     public boolean sendRoadDataToBlockchain() throws IOException, GatewayException, CommitException {
-
+        System.out.println("Sturen data van de weg naar de Blockchain");
         this.road.setRoadId(String.valueOf(road.hashCode()));
-        if(!this.roadAssetClient.checkForAssetExistence(this.road.getRoadId())) {
-            return this.roadAssetClient.createRoadAsset(this.road);
-        } else {
-            return this.roadAssetClient.updateRoadAsset(this.road);
-        }
+        return true;
+//        if(!this.roadAssetClient.checkForAssetExistence(this.road.getRoadId())) {
+//            return this.roadAssetClient.createRoadAsset(this.road);
+//        } else {
+//            return this.roadAssetClient.updateRoadAsset(this.road);
+//        }
     }
 }

@@ -7,15 +7,12 @@ import com.capgemini.ppk_blockchain.web.db.models.ReverseRoads;
 import com.capgemini.ppk_blockchain.web.db.models.Wegen;
 import com.capgemini.ppk_blockchain.web.repositories.ReverseRoadRepository;
 import com.capgemini.ppk_blockchain.web.repositories.WegenRepository;
-import com.capgemini.ppk_blockchain.web.restmodels.Address;
-import com.capgemini.ppk_blockchain.web.restmodels.CarInfo;
-import com.capgemini.ppk_blockchain.web.restmodels.OpenstreetMap;
-import com.capgemini.ppk_blockchain.web.restmodels.RoadInformation;
+import com.capgemini.ppk_blockchain.web.restmodels.*;
 import org.hyperledger.fabric.client.CommitException;
 import org.hyperledger.fabric.client.GatewayException;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.*;
 
 @Service
 public class DriverInfoProcessor {
@@ -26,6 +23,7 @@ public class DriverInfoProcessor {
     private final BlockchainDriverAssetCommitServiceImpl blockchainDriverAssetCommitService;
     private final BlockchainRoadAssetCommitServiceImpl blockchainRoadAssetCommitService;
     private final HashMap<String, Integer> roadsNotInDataset;
+    private final Set<String> gegokteWegen;
 
     public DriverInfoProcessor(WegenRepository wegenRepository, ReverseRoadRepository reverseRoadRepository,
                                ReverseGeocodingService reverseGeocodingService, BlockchainDriverAssetCommitServiceImpl blockchainDriverAssetCommitService, BlockchainRoadAssetCommitServiceImpl blockchainRoadAssetCommitService, BlockchainDriverAssetCommitServiceImpl blockchainDriverAssetCommitServiceImpl) {
@@ -35,6 +33,7 @@ public class DriverInfoProcessor {
         this.blockchainDriverAssetCommitService = blockchainDriverAssetCommitService;
         this.blockchainRoadAssetCommitService = blockchainRoadAssetCommitService;
         this.roadsNotInDataset = initializeRoadsNotInDataset();
+        this.gegokteWegen = new HashSet<>();
     }
 
     private HashMap<String, Integer> initializeRoadsNotInDataset() {
@@ -73,11 +72,10 @@ public class DriverInfoProcessor {
      *
      * @return The cost of the ride.
      */
-    public double processDriverInformation(CarInfo carInfo) throws Exception {
+    public RoadTripInformation processDriverInformation(CarInfo carInfo) throws Exception {
 
         //As the car information is considered the driver information, we move the data to the DriverAsset DTO in the
         //blockchain package.
-
         blockchainDriverAssetCommitService.addCarInfoToDriverAsset(carInfo.getKenteken(), carInfo.getKenteken(),
                 carInfo.getMerk(), carInfo.getEmissieType());
         int skippedRoads = 0;
@@ -85,7 +83,11 @@ public class DriverInfoProcessor {
             processRoadInformation(roadinformation);
         }
         this.blockchainDriverAssetCommitService.updateDriverAsset();
-        return this.blockchainDriverAssetCommitService.retrieveRideCosts();
+        System.out.println("Terugstuur waarde");
+
+        RoadTripInformation roadTripInformation = new RoadTripInformation(this.gegokteWegen, this.blockchainDriverAssetCommitService.retrieveRideCosts());
+        System.out.println(roadTripInformation);
+        return roadTripInformation;
     }
 
     private int determineRoadCategory(String roadName) {
@@ -109,8 +111,10 @@ public class DriverInfoProcessor {
     }
 
     private void processRoadInformation(RoadInformation roadinformation) {
+        System.out.println(roadinformation.toString());
         ReverseRoads reverseRoads = reverseRoadRepository.findByLatAndLon(roadinformation.getLatitude(), roadinformation.getLongitude());
         if (reverseRoads != null) {
+            System.out.println("Reverse roads is niet null");
             this.blockchainRoadAssetCommitService.addDataToRoad(
                     reverseRoads.getRoadAdminType(),
                     reverseRoads.getStreetName(),
@@ -127,21 +131,30 @@ public class DriverInfoProcessor {
     private void processOpenStreetMapData(OpenstreetMap openstreetMap, RoadInformation roadinformation) {
         if (openstreetMap != null) {
             Address address = openstreetMap.getAddress();
-            if (roadsNotInDataset.containsKey(address.getRoad())) {
-                addRoadData(address, roadinformation);
+            Wegen wegen = wegenRepository.findWegenByStreetName(address.getRoad(), address.getTown());
+
+            if(wegen != null) {
+                addWegenData(wegen, roadinformation);
             } else {
-                Wegen wegen = wegenRepository.findWegenByStreetName(address.getRoad(), address.getTown());
-                if (wegen != null) {
-                    addWegenData(wegen, roadinformation);
+                System.out.println("Kijken nu of we de wegen kunnen gokken");
+                System.out.println(address.getRoad());
+                System.out.println(address.toString());
+                if(address.getRoad() == null) {
+                    return;
                 }
+                int roadCategory = this.determineRoadCategory(address.getRoad());
+                System.out.println("De naam van de weg: " + address.getRoad());
+                System.out.println("De gegokte categorie: " + roadCategory);
+                addRoadData(address, roadinformation, roadCategory);
+                this.gegokteWegen.add(address.getRoad());
             }
         }
     }
 //
-    private void addRoadData(Address address, RoadInformation roadinformation) {
-        blockchainDriverAssetCommitService.addTravelInformationToDriverAsset(roadsNotInDataset.get(address.getRoad()), address.getRoad(), roadinformation);
+    private void addRoadData(Address address, RoadInformation roadinformation, int roadCategory) {
+        blockchainDriverAssetCommitService.addTravelInformationToDriverAsset(roadCategory, address.getRoad(), roadinformation);
         blockchainRoadAssetCommitService.addDataToRoad(
-                roadsNotInDataset.get(address.getRoad()),
+                roadCategory,
                 address.getRoad(),
                 address.getMunicipality(),
                 address.getState(),

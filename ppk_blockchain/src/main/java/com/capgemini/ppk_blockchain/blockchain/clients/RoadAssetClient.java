@@ -38,7 +38,7 @@ public class RoadAssetClient implements RoadAssetClientInterface {
     public boolean createRoadAsset(Road road) throws EndorseException, CommitException, SubmitException, CommitStatusException {
         String resp = null;
 
-
+        System.out.println(road.toString());
         contract.submitTransaction("createRoadAsset", road.getRoadId(),
                 Objects.requireNonNullElse(road.getRoadAdminType(), "empty"),
                 Objects.requireNonNullElse(road.getStreetName(), "Empty"),
@@ -69,7 +69,17 @@ public class RoadAssetClient implements RoadAssetClientInterface {
 
     @Override
     public List<Road> readRoadAssetByName(String roadName) {
-        return List.of();
+        String resp = null;
+        byte[] readDriverAsset = null;
+        try {
+            readDriverAsset = contract.evaluateTransaction("retrieveRoadAssetsByName", roadName);
+        } catch (GatewayException e) {
+            throw new RuntimeException(e);
+        }
+        resp = new String(readDriverAsset, StandardCharsets.UTF_8);
+        Type listType = new TypeToken<List<Road>>() {
+        }.getType();
+        return gson.fromJson(resp, listType);
     }
 
 
@@ -100,16 +110,49 @@ public class RoadAssetClient implements RoadAssetClientInterface {
      */
     public List<Road> retrieveRoadsByMunicipality(String municipality) {
         String resp = null;
-
         byte[] readDriverAsset = null;
         try {
-            readDriverAsset = contract.evaluateTransaction("readRoadByMunicipality", municipality);
+            readDriverAsset = contract.evaluateTransaction("retrieveRoadAssetsByMunicipality", municipality);
         } catch (GatewayException e) {
             throw new RuntimeException(e);
         }
         resp = new String(readDriverAsset, StandardCharsets.UTF_8);
-        System.out.println("Check dit thomas!");
-        System.out.println(resp);
+        Type listType = new TypeToken<List<Road>>() {
+        }.getType();
+        return gson.fromJson(resp, listType);
+    }
+
+    /**
+     * @param state
+     * @return
+     */
+    public List<Road> retrieveRoadsByState(String state) {
+        String resp = null;
+        byte[] readDriverAsset = null;
+        try {
+            readDriverAsset = contract.evaluateTransaction("retrieveRoadAssetsByState", state);
+        } catch (GatewayException e) {
+            throw new RuntimeException(e);
+        }
+        resp = new String(readDriverAsset, StandardCharsets.UTF_8);
+        Type listType = new TypeToken<List<Road>>() {
+        }.getType();
+        return gson.fromJson(resp, listType);
+    }
+
+    /**
+     * @param adminType
+     * @return
+     */
+    public List<Road> retrieveRoadAssetsByAdminType(String adminType) {
+        String resp = null;
+        byte[] readDriverAsset = null;
+        try {
+            readDriverAsset = contract.evaluateTransaction("retrieveRoadAssetsByAdminType", adminType);
+        } catch (GatewayException e) {
+            throw new RuntimeException(e);
+        }
+        resp = new String(readDriverAsset, StandardCharsets.UTF_8);
         Type listType = new TypeToken<List<Road>>() {
         }.getType();
         return gson.fromJson(resp, listType);
